@@ -1,434 +1,599 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The News Detective — Phase 1: Critical Thinking</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f5f4f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
-#app{width:100%;max-width:680px;background:#fff;border-radius:16px;padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-
-.header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
-.badge{background:#f1efe8;border:0.5px solid #d3d1c7;border-radius:8px;padding:4px 10px;font-size:12px;color:#5f5e5a}
-.score-bar{display:flex;gap:8px;align-items:center;margin-left:auto}
-.score-num{font-size:20px;font-weight:500;color:#1a1a1a}
-.score-label{font-size:12px;color:#888780}
-.source-dot{width:36px;height:36px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#185fa5;flex-shrink:0}
-.source-dot.sm{width:28px;height:28px;font-size:11px}
-
-.news-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
-.news-source{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.source-name{font-size:13px;font-weight:500;color:#1a1a1a}
-.source-handle{font-size:12px;color:#888780}
-.news-headline{font-size:15px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:6px}
-.news-body{font-size:13px;color:#5f5e5a;line-height:1.6}
-.news-meta{font-size:11px;color:#b4b2a9;margin-top:8px}
-
-.question-card{background:#f5f4f0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
-.q-phase{font-size:11px;color:#888780;letter-spacing:.04em;margin-bottom:4px;text-transform:uppercase}
-.q-text{font-size:14px;color:#1a1a1a;font-weight:500;line-height:1.5;margin-bottom:12px}
-.q-hint{font-size:12px;color:#5f5e5a;margin-bottom:12px;font-style:italic}
-.options-grid{display:flex;flex-direction:column;gap:8px}
-
-.opt-btn{background:#fff;border:0.5px solid #b4b2a9;border-radius:8px;padding:10px 14px;font-size:13px;color:#1a1a1a;cursor:pointer;text-align:left;transition:background .15s,border .15s;line-height:1.4;width:100%}
-.opt-btn:hover{background:#f1efe8;border-color:#888780}
-.opt-btn.correct{background:#eaf3de;border-color:#639922;color:#3b6d11}
-.opt-btn.wrong{background:#fcebeb;border-color:#e24b4a;color:#a32d2d}
-.opt-btn.reveal{background:#eaf3de;border-color:#639922;color:#3b6d11;opacity:.6}
-.opt-btn:disabled{cursor:default}
-
-.feedback{border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.5;margin-top:8px;display:none}
-.feedback.show{display:block}
-.feedback.good{background:#eaf3de;color:#3b6d11;border:0.5px solid #639922}
-.feedback.bad{background:#fcebeb;color:#a32d2d;border:0.5px solid #e24b4a}
-
-.drag-area{background:#fff;border:0.5px solid #b4b2a9;border-radius:8px;padding:8px;min-height:44px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
-.drag-area.drop-target{border-color:#378add;background:#e6f1fb}
-.chip{background:#f1efe8;border:0.5px solid #d3d1c7;border-radius:20px;padding:5px 12px;font-size:12px;color:#1a1a1a;cursor:grab;user-select:none;transition:opacity .15s}
-.chip:active{cursor:grabbing;opacity:.7}
-.chip.placed-good{background:#eaf3de;border-color:#639922;color:#3b6d11}
-.chip.placed-bad{background:#fcebeb;border-color:#e24b4a;color:#a32d2d}
-.drag-label{font-size:12px;color:#5f5e5a;margin-bottom:4px}
-
-.next-btn{margin-top:1rem;width:100%}
-.progress-track{height:4px;background:#f1efe8;border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
-.progress-fill{height:100%;background:#378add;border-radius:2px;transition:width .4s}
-
-.verdict{text-align:center;padding:1.5rem 1rem}
-.verdict-icon{font-size:48px;margin-bottom:12px}
-.verdict-title{font-size:22px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
-.verdict-sub{font-size:14px;color:#5f5e5a;margin-bottom:1.5rem;line-height:1.6}
-.skill-breakdown{background:#f5f4f0;border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left}
+#app{padding:1.5rem 1rem;max-width:680px;font-family:var(--font-sans)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.hdr{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+.phase-badge{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:3px 10px;font-size:12px;color:var(--color-text-secondary)}
+.phase-badge.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.score-wrap{margin-left:auto;display:flex;gap:6px;align-items:baseline}
+.score-num{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.score-lbl{font-size:12px;color:var(--color-text-secondary)}
+.prog-track{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:1.25rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--color-border-info);border-radius:2px;transition:width .4s}
+.news-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.src-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-info);flex-shrink:0}
+.src-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.src-handle{font-size:12px;color:var(--color-text-secondary)}
+.headline{font-size:15px;font-weight:500;color:var(--color-text-primary);line-height:1.4;margin-bottom:6px}
+.body-txt{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.meta{font-size:11px;color:var(--color-text-tertiary);margin-top:8px}
+.url-bar{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 12px;font-size:12px;font-family:var(--font-mono);color:var(--color-text-secondary);margin-top:8px;word-break:break-all}
+.q-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.q-phase-lbl{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.q-text{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:10px}
+.q-hint{font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;font-style:italic}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 13px;font-size:13px;color:var(--color-text-primary);cursor:pointer;text-align:left;line-height:1.4;transition:background .12s}
+.opt:hover:not(:disabled){background:var(--color-background-secondary)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.opt.bad{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
+.opt.reveal{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success);opacity:.55}
+.fb{border-radius:var(--border-radius-md);padding:10px 13px;font-size:13px;line-height:1.5;margin-top:8px;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--color-background-success);color:var(--color-text-success);border:0.5px solid var(--color-border-success)}
+.fb.bad{background:var(--color-background-danger);color:var(--color-text-danger);border:0.5px solid var(--color-border-danger)}
+.drag-zone{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px;min-height:42px;display:flex;flex-wrap:wrap;gap:6px}
+.drag-zone.over{border-color:var(--color-border-info);background:var(--color-background-info)}
+.chip{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--color-text-primary);cursor:grab;user-select:none}
+.chip.cok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.chip.cbad{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
+.zone-lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
+.rank-item{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 13px;font-size:13px;color:var(--color-text-primary);cursor:grab;display:flex;align-items:center;gap:8px;user-select:none}
+.rank-item i{color:var(--color-text-tertiary);font-size:16px}
+.rank-item.sel{border-color:var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info)}
+.rank-item.rk-ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.rank-item.rk-bad{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.tool-btn{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:13px;color:var(--color-text-primary);cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .12s}
+.tool-btn:hover{background:var(--color-background-secondary)}
+.tool-btn.used{border-color:var(--color-border-success);color:var(--color-text-success)}
+.tool-result{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 13px;font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-height:1.5;display:none}
+.tool-result.show{display:block}
+.meter-wrap{margin:12px 0}
+.meter-track{height:12px;background:var(--color-background-primary);border-radius:6px;overflow:hidden;border:0.5px solid var(--color-border-tertiary)}
+.meter-fill{height:100%;border-radius:6px;transition:width .6s;background:var(--color-border-danger)}
+.meter-fill.mid{background:var(--color-border-warning)}
+.meter-fill.high{background:var(--color-border-success)}
+.next-btn{width:100%;margin-top:1rem}
+.verdict-wrap{text-align:center;padding:1.5rem 1rem}
+.v-icon{font-size:44px;margin-bottom:10px}
+.v-title{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.v-sub{font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.25rem}
+.skill-box{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:1rem;text-align:left}
 .skill-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.skill-name{font-size:12px;color:#5f5e5a;width:110px;flex-shrink:0}
-.skill-bar{flex:1;height:6px;background:#fff;border-radius:3px;overflow:hidden}
-.skill-fill{height:100%;border-radius:3px;background:#378add}
-
-.intro-title{font-size:22px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
-.intro-sub{font-size:14px;color:#5f5e5a;line-height:1.6;margin-bottom:1.5rem}
-.case-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
-.case-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:12px;cursor:pointer;transition:border .15s}
-.case-card:hover{border-color:#888780}
-.case-card.selected{border-color:#378add;background:#e6f1fb}
-.case-tag{font-size:11px;color:#888780;margin-bottom:4px}
-.case-title{font-size:13px;font-weight:500;color:#1a1a1a;line-height:1.4}
-.start-btn{width:100%}
-
-.info-box{background:#f5f4f0;border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left}
-.info-box-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
-.info-box-body{font-size:13px;color:#5f5e5a;line-height:1.6}
-
-@media(max-width:480px){
-  .case-select{grid-template-columns:1fr}
-  body{padding:1rem .5rem}
-  #app{padding:1.25rem}
-}
+.skill-name{font-size:12px;color:var(--color-text-secondary);width:120px;flex-shrink:0}
+.skill-bar{flex:1;height:6px;background:var(--color-background-primary);border-radius:3px;overflow:hidden}
+.skill-fill{height:100%;border-radius:3px;background:var(--color-border-info);transition:width .6s .2s}
+.case-box{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:1rem;text-align:left}
+.phase-pills{display:flex;gap:6px;margin-bottom:1rem}
+.p-pill{flex:1;text-align:center;padding:6px 8px;border-radius:var(--border-radius-md);font-size:12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);background:var(--color-background-secondary)}
+.p-pill.done{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.p-pill.act{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+.intro-title{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.intro-sub{font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.25rem}
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.c-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;cursor:pointer;transition:border .12s}
+.c-card:hover{border-color:var(--color-border-secondary)}
+.c-card.picked{border-color:var(--color-border-info);background:var(--color-background-info)}
+.c-tag{font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px}
+.c-title{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.4}
+.phase-intro{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.phase-intro-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.phase-intro-body{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
 </style>
-</head>
-<body>
+
 <div id="app">
-<h2 class="sr-only">News Detective — Phase 1: Critical Thinking trainer. Practice spotting misinformation using real-world examples.</h2>
-<div id="screen-intro"></div>
-<div id="screen-game" style="display:none"></div>
-<div id="screen-verdict" style="display:none"></div>
+<h2 class="sr-only">News Detective — full three-phase game: Critical Thinking, Initial Verification, and Technical Tools. Investigate real misinformation patterns.</h2>
+<div id="scr-intro"></div>
+<div id="scr-phase-intro" style="display:none"></div>
+<div id="scr-game" style="display:none"></div>
+<div id="scr-verdict" style="display:none"></div>
 </div>
 
 <script>
 const CASES=[
-{
-  id:"climate",tag:"Science & Health",
-  title:"\"Volcanic eruptions release more CO₂ than humans, scientists confirm\"",
-  source:{initials:"NG",name:"NaturalGeo News",handle:"@NaturalGeoNews"},
-  body:"A widely-shared post claims that volcanic activity is the primary driver of rising CO₂ levels, making human emissions irrelevant. The post cites 'multiple geologists' and includes dramatic photos of erupting volcanoes.",
-  meta:"Shared 84,000 times · March 2024",
-  verdict:"FAKE",
-  realContext:"US Geological Survey data shows human emissions are 60–100× greater than all volcanic activity combined. This claim has been debunked repeatedly but resurfaces regularly."
-},{
-  id:"migration",tag:"Politics & Society",
-  title:"\"Government secretly planning to house 10,000 migrants in local schools during summer\"",
-  source:{initials:"LV",name:"LocalVoice247",handle:"@localvoice247_news"},
-  body:"A post with an alarming headline claims local authorities have signed contracts to use school buildings as temporary housing this summer, based on 'documents obtained exclusively'. No official names or document numbers are provided.",
-  meta:"Shared 210,000 times · June 2024",
-  verdict:"FAKE",
-  realContext:"No such policy existed. The 'documents' were never shown. This is a common template for political misinformation — vague sourcing + emotional headline + local specificity to seem credible."
-},{
-  id:"health",tag:"Health & Medicine",
-  title:"\"Hospital confirms: drinking alkaline water cures early-stage cancer, doctors shocked\"",
-  source:{initials:"HW",name:"HealthWellness Today",handle:"@healthwellnesstoday"},
-  body:"Post claims a major hospital has 'quietly' acknowledged that patients drinking alkaline water showed 'remarkable' tumor reduction. Quotes an unnamed oncologist and links to a premium health supplement store.",
-  meta:"Shared 430,000 times · January 2024",
-  verdict:"FAKE",
-  realContext:"No peer-reviewed study or hospital has made this claim. The post is designed to sell supplements. The body regulates blood pH tightly regardless of what you drink — this is basic physiology."
-},{
-  id:"election",tag:"Elections & Democracy",
-  title:"\"Leaked memo shows election officials ordered to change votes in key districts\"",
-  source:{initials:"PV",name:"PatriotVoiceUS",handle:"@PatriotVoiceUS_Real"},
-  body:"An account created 3 weeks ago posts a blurry image of a supposed internal memo, claiming widespread coordination to manipulate ballot counts. The account has 12 followers but the post went viral via retweets from larger accounts.",
-  meta:"Shared 900,000 times · November 2023",
-  verdict:"FAKE",
-  realContext:"Election officials from both parties, independent monitors, and courts found no evidence of coordinated fraud. The 'memo' image was fabricated. New accounts spreading explosive election content just before votes are a documented misinformation tactic."
+{id:"climate",tag:"Science",title:'"Volcanic eruptions release more CO₂ than humans, scientists confirm"',
+source:{i:"NG",name:"NaturalGeo News",h:"@NaturalGeoNews"},
+body:"A widely-shared post claims volcanic activity is the primary driver of rising CO₂ levels, making human emissions irrelevant. It cites 'multiple geologists' and features dramatic volcano photos.",
+meta:"Shared 84,000 times · March 2024",
+url:"naturalgeo-news.co/climate-volcanoes-truth",
+imgResult:"Reverse image search: photo is from a 2010 Iceland eruption, not a recent event.",
+factResult:"Snopes (2023): FALSE. Human emissions are 60–100× greater than all volcanic CO₂ combined, per USGS data.",
+deepfakeResult:"No AI manipulation detected in imagery.",
+realContext:"Human emissions are 60–100× greater than all volcanic activity combined (USGS). The volcano photo was taken in 2010 in Iceland — unrelated to any recent story. This claim resurfaces cyclically.",
+verdict:"FAKE"
+},
+{id:"migration",tag:"Politics",title:'"Government secretly housing 10,000 migrants in schools this summer"',
+source:{i:"LV",name:"LocalVoice247",h:"@localvoice247_news"},
+body:"A post claims local authorities signed contracts to use school buildings as temporary housing. The report cites 'documents obtained exclusively' with no official names or document numbers.",
+meta:"Shared 210,000 times · June 2024",
+url:"localvoice247.news.co.uk/migrants-schools-exclusive",
+imgResult:"Reverse image search: photo shows a school gym used during a 2015 refugee crisis in Germany — not the UK.",
+factResult:"Full Fact (UK): No evidence found. No council has confirmed such contracts. The 'documents' have not been produced.",
+deepfakeResult:"Image metadata shows the photo was taken in 2015, not 2024.",
+realContext:"No such policy existed. The 'documents' were never shown. This follows a template: vague sourcing + local specificity + emotional stakes to seem credible.",
+verdict:"FAKE"
+},
+{id:"health",tag:"Health",title:'"Hospital confirms: alkaline water cures early-stage cancer, doctors shocked"',
+source:{i:"HW",name:"HealthWellness Today",h:"@healthwellnesstoday"},
+body:"Post claims a major hospital has 'quietly' acknowledged patients drinking alkaline water showed 'remarkable' tumor reduction. Quotes an unnamed oncologist, links to a premium supplement store.",
+meta:"Shared 430,000 times · January 2024",
+url:"healthwellness-today.net/alkaline-cancer-cure",
+imgResult:"Photo of 'doctor' is a stock image sold on Getty Images, used by dozens of unrelated websites.",
+factResult:"Reuters Fact Check: FALSE. No peer-reviewed study or hospital has made this claim. The body tightly regulates blood pH regardless of diet.",
+deepfakeResult:"The 'video testimonial' shows facial rendering artifacts consistent with AI synthesis around the jaw and hairline.",
+realContext:"This is a classic supplement scam structure. The body regulates pH tightly — this is basic physiology. The 'doctor' image is stock photography.",
+verdict:"FAKE"
+},
+{id:"election",tag:"Elections",title:'"Leaked memo: election officials ordered to change votes in key districts"',
+source:{i:"PV",name:"PatriotVoiceUS",h:"@PatriotVoiceUS_Real"},
+body:"An account created 3 weeks ago posts a blurry image of a supposed internal memo. It claims widespread coordination to manipulate ballot counts. The account has 12 followers but was amplified by larger accounts.",
+meta:"Shared 900,000 times · November 2023",
+url:"patriotvoice-us.info/leaked-election-memo",
+imgResult:"The 'memo' image matches a template sold on a document design website — it is not an official government format.",
+factResult:"AP Fact Check: FALSE. Election officials from both parties, independent monitors and courts found no evidence of coordinated fraud.",
+deepfakeResult:"Document forensics: font metadata shows the file was created 2 days before it was allegedly 'leaked'. Inconsistent kerning and official seal is a low-resolution copy-paste.",
+realContext:"The memo was fabricated. New anonymous accounts that appear just before elections and spread explosive fraud claims are a documented coordinated misinformation pattern.",
+verdict:"FAKE"
 }];
 
-const QUESTIONS=[
-{
-  id:"emotional_tone",skill:"Emotional tone",type:"choice4",
-  text:"Which word best describes the emotional register of this headline and post?",
-  hint:"Misinformation often uses language designed to make you feel something before you think.",
-  options:[
-    {label:"Neutral — reports facts without loaded language",correct:false,fb:"Neutral language tends to use precise numbers and attribution. This post uses vague superlatives and alarm language."},
-    {label:"Alarming — designed to create urgency or fear",correct:true,fb:"Correct. Phrases like 'secretly', 'shocked', or 'confirm' signal emotional manipulation. Real news organizations use measured language even for serious topics."},
-    {label:"Analytical — breaks down evidence step by step",correct:false,fb:"Analytical content cites specific data and acknowledges counterarguments — this post does neither."},
-    {label:"Promotional — selling a product or service",correct:false,fb:"While some misinformation is promotional, the primary tactic here is emotional alarm, not advertising."}
-  ]
-},{
-  id:"source_check",skill:"Source credibility",type:"choice4",
-  text:"You look up the account that posted this. Which of these would make you MOST suspicious?",
-  hint:"Think about what legitimate news organizations and experts look like online.",
-  options:[
-    {label:"The account was verified 5 years ago and has a track record of accurate reporting",correct:false,fb:"Age and verification matter — but remember, even established accounts can share misinformation."},
-    {label:"The account was created last month and has no posting history before this viral story",correct:true,fb:"Exactly right. Accounts created suddenly around a specific story, with no prior history, are a major red flag. This is a documented pattern in coordinated misinformation campaigns."},
-    {label:"The account links to its About page with an editorial team and physical address",correct:false,fb:"Transparency about team and location is a positive signal — though fake sites can still include this."},
-    {label:"The account posts across many topics and has been active for years",correct:false,fb:"Longevity and topical breadth are generally positive signals for credibility — though not guarantees."}
-  ]
-},{
-  id:"consensus",skill:"Cross-checking",type:"choice4",
-  text:"You search the main claim on Google News. What result would make you MOST confident the story might be legitimate?",
-  hint:"Think about how major news stories get covered across the media ecosystem.",
-  options:[
-    {label:"Only the original account and a few similar anonymous pages mention it",correct:false,fb:"If a major story exists only on one account and its mirrors, that is a strong signal it didn't happen."},
-    {label:"Reuters, AP, and BBC all independently report the same core facts with named sources",correct:true,fb:"Correct. When major wire services plus independent outlets report the same core claim with named sources, the story has been independently verified."},
-    {label:"A celebrity with millions of followers has retweeted it",correct:false,fb:"Social amplification is not the same as verification. Celebrities share misinformation regularly."},
-    {label:"The story appears on a site that looks exactly like a major news website",correct:false,fb:"Clone sites are a common tactic. Always check the full URL carefully and look for the story on the real outlet's site directly."}
-  ]
-},{
-  id:"evidence",skill:"Evidence quality",type:"choice4",
-  text:"The post cites 'experts' and 'scientists'. Which citation pattern is a red flag?",
-  hint:"Think about what real academic or professional citation looks like.",
-  options:[
-    {label:"'According to Dr. Sarah Chen, epidemiologist at Johns Hopkins, in a 2023 Lancet study...'",correct:false,fb:"This is good sourcing — a named expert, institution, publication, and year. You can verify all of these independently."},
-    {label:"'Multiple geologists confirm...' / 'Experts say...' / 'Sources revealed...'",correct:true,fb:"Exactly. Vague sourcing is a classic misinformation pattern. If experts truly said something newsworthy, their names and institution would be cited."},
-    {label:"'The IPCC's 2023 synthesis report (AR6) states on page 14...'",correct:false,fb:"Specific document references with page numbers are strong sourcing signals — you can look it up directly."},
-    {label:"'A peer-reviewed meta-analysis of 47 studies published in Nature...'",correct:false,fb:"Peer review, specific journal, and study count are all positive credibility signals."}
-  ]
-},{
-  id:"intent",skill:"Intent analysis",type:"choice4",
-  text:"What does the post want you to DO after reading it?",
-  hint:"Real journalism informs. Misinformation usually wants to trigger an action or emotion.",
-  options:[
-    {label:"Understand a complex situation through multiple perspectives",correct:false,fb:"Presenting multiple perspectives and letting the reader decide is a hallmark of quality journalism."},
-    {label:"Share it immediately, before checking — 'people need to know this now'",correct:true,fb:"Urgency that pressures you to share before thinking is a manipulation tactic. Misinformation spreads fastest in the first hour — that's not accidental."},
-    {label:"Read the primary sources and form your own view",correct:false,fb:"Encouraging primary source reading is the opposite of what misinformation does."},
-    {label:"Contact relevant authorities if you have relevant information",correct:false,fb:"Legitimate journalism on public safety topics often includes official contact information."}
-  ]
-},{
-  id:"drag_flags",skill:"Red flag recognition",type:"drag",
-  text:"Drag each phrase into the correct category: red flag (suspicious) or green flag (credible signal).",
-  hint:"Some features make a story more trustworthy; others should raise your suspicion.",
-  items:[
-    {label:"'Experts say'",correct:"red"},
-    {label:"Named journalist + editor",correct:"green"},
-    {label:"'SHOCKING'",correct:"red"},
-    {label:"Published date and update",correct:"green"},
-    {label:"No named sources",correct:"red"},
-    {label:"Links to original study",correct:"green"},
-    {label:"Account created last week",correct:"red"},
-    {label:"Verified outlet badge",correct:"green"},
-  ]
-},{
-  id:"bias_check",skill:"Confirmation bias",type:"choice4",
-  text:"The post confirms something you already believed. What is the most important next step?",
-  hint:"Our instinct to trust things we agree with is exactly what misinformation exploits.",
-  options:[
-    {label:"Share it — it confirms what you've known for a long time",correct:false,fb:"This is confirmation bias in action. Agreeing with a claim is not evidence it's true."},
-    {label:"Apply the same verification checks you'd use on a story you disagree with",correct:true,fb:"Correct. The antidote to confirmation bias is deliberate symmetry — asking 'would I accept this sourcing if the conclusion were different?' is one of the most powerful critical thinking tools."},
-    {label:"It must be true — you've seen similar claims before",correct:false,fb:"Frequency of exposure is not evidence of truth. This is called the illusory truth effect."},
-    {label:"Ask only people who share your view whether it seems accurate",correct:false,fb:"Echo chambers amplify our existing beliefs rather than testing them."}
-  ]
-}];
+const P1_QS=[
+{id:"tone",skill:"Emotional tone",type:"c4",
+text:"Which word best describes the emotional register of this headline?",
+hint:"Misinformation uses language to make you feel before you think.",
+opts:[
+{t:"Neutral — reports facts without loaded language",ok:false,fb:"Neutral language uses precise numbers and attribution. This post uses vague superlatives and alarm language."},
+{t:"Alarming — designed to create urgency or fear",ok:true,fb:"Correct. Words like 'secretly', 'shocked', 'confirm' signal emotional manipulation. Real journalism uses measured language even for serious stories."},
+{t:"Analytical — breaks down evidence step by step",ok:false,fb:"Analytical content cites specific data and acknowledges counterarguments. This post does neither."},
+{t:"Promotional — selling a product or service",ok:false,fb:"While some misinformation is promotional, the primary tactic here is emotional alarm, not advertising."}
+]},
+{id:"bias",skill:"Confirmation bias",type:"c4",
+text:"The post confirms something you already believed. What is the most important next step?",
+hint:"Our instinct to trust things we agree with is what misinformation exploits.",
+opts:[
+{t:"Share it — it confirms what you've known for a long time",ok:false,fb:"This is confirmation bias. Believing something more because it matches your prior views is exactly what bad actors exploit."},
+{t:"Apply the same verification checks you'd use on a story you disagree with",ok:true,fb:"Correct. The antidote is deliberate symmetry: 'Would I accept this sourcing if the conclusion were different?'"},
+{t:"It must be true — you've seen similar claims before",ok:false,fb:"Frequency of exposure is not evidence of truth. Repetition makes claims feel familiar — this is the illusory truth effect."},
+{t:"Ask people who share your view whether it seems accurate",ok:false,fb:"Echo chambers amplify existing beliefs rather than testing them."}
+]},
+{id:"intent",skill:"Intent analysis",type:"c4",
+text:"What does the post want you to DO after reading it?",
+hint:"Real journalism informs. Misinformation usually wants to trigger an action.",
+opts:[
+{t:"Understand a complex situation through multiple perspectives",ok:false,fb:"Presenting multiple perspectives is a hallmark of quality journalism. This post does the opposite."},
+{t:"Share it immediately before checking — 'people need to know this now'",ok:true,fb:"Urgency that pressures you to share before thinking is a manipulation tactic. Misinformation spreads fastest in the first hour — by design."},
+{t:"Read the primary sources and form your own view",ok:false,fb:"Encouraging primary source reading is the opposite of what misinformation does."},
+{t:"Contact authorities if you have relevant information",ok:false,fb:"Legitimate journalism on public safety often includes official contact information. This post has none."}
+]},
+{id:"evidence",skill:"Evidence quality",type:"c4",
+text:"The post cites 'experts' and 'scientists'. Which citation pattern is a red flag?",
+hint:"Think about what real academic citation looks like.",
+opts:[
+{t:"'Dr. Sarah Chen, epidemiologist at Johns Hopkins, in a 2023 Lancet study...'",ok:false,fb:"Good sourcing: named expert, institution, publication, year. You can verify all of these independently."},
+{t:"'Multiple experts confirm...' / 'Sources revealed...' / 'Scientists say...'",ok:true,fb:"Exactly. Vague sourcing is a classic misinformation pattern. If experts truly said something, their names would be cited. 'Sources say' is unfalsifiable by design."},
+{t:"'The IPCC's 2023 synthesis report (AR6) states on page 14...'",ok:false,fb:"Specific document references are strong sourcing signals — you can look them up directly."},
+{t:"'A peer-reviewed meta-analysis of 47 studies published in Nature...'",ok:false,fb:"Peer review, specific journal, and study count are all positive signals. Misinformation rarely provides this because it would be easily disproved."}
+]},
+{id:"drag_flags",skill:"Red flag recognition",type:"drag",
+text:"Drag each phrase to the correct zone: red flag (suspicious) or green flag (credible).",
+hint:"Some features make a story more trustworthy; others should raise suspicion.",
+items:[
+{l:"'Experts say'",z:"red"},{l:"Named journalist + editor",z:"green"},
+{l:"'SHOCKING'",z:"red"},{l:"Published date + update",z:"green"},
+{l:"No named sources",z:"red"},{l:"Links to original study",z:"green"},
+{l:"Account created last week",z:"red"},{l:"Verified outlet badge",z:"green"}
+]}
+];
 
-let selectedCase=null,questionQueue=[],currentQIdx=0,score=0,answers=[];
+const P2_QS=[
+{id:"src_age",skill:"Source credibility",type:"c4",
+text:"You check the account that posted this. Which observation is most suspicious?",
+hint:"Think about what legitimate news organizations look like online.",
+opts:[
+{t:"The account was verified 5 years ago with a track record of credible reporting",ok:false,fb:"Age and verification are positive signals — though even established accounts can share misinformation."},
+{t:"The account was created last month with no posting history before this story",ok:true,fb:"Accounts created suddenly around a specific story with no prior history are a major red flag. This is a documented pattern in coordinated campaigns."},
+{t:"The account links to an About page with an editorial team and physical address",ok:false,fb:"Transparency about team and location is a positive signal — though fake sites can include this too."},
+{t:"The account posts across many topics and has been active for years",ok:false,fb:"Longevity and topical breadth are generally positive credibility signals."}
+]},
+{id:"url_check",skill:"URL analysis",type:"c4",
+text:`Look at this URL: "${CASES[0].url}". What raises the most suspicion?`,
+hint:"Misinformation sites often mimic legitimate outlets with subtle changes.",
+opts:[
+{t:"The story is about a controversial topic",ok:false,fb:"Topic alone doesn't indicate a fake source. Legitimate outlets cover controversial topics all the time."},
+{t:"The domain uses .co instead of .com, and has a hyphenated name mimicking a real outlet",ok:true,fb:"Correct. Clone sites use .co, .net, .xyz or hyphens to mimic trusted brands. Always check the full URL directly, not just the headline."},
+{t:"The URL is long",ok:false,fb:"URL length is not a reliability indicator. Legitimate outlets often have long URLs with dates and categories."},
+{t:"The URL doesn't use HTTPS",ok:false,fb:"HTTPS indicates encryption, not accuracy. Fake sites often use HTTPS too — it's a security feature, not a truth indicator."}
+]},
+{id:"date_check",skill:"Temporal context",type:"c4",
+text:"The post claims this is happening 'right now'. What should you check first?",
+hint:"Old content recycled as current news is one of the most common misinformation tactics.",
+opts:[
+{t:"Whether the writing style is professional",ok:false,fb:"Writing style can signal quality but doesn't tell you whether the event is current. A well-written post can still use old content dishonestly."},
+{t:"The publication date, and whether the images or events match that date",ok:true,fb:"Exactly. 'Decontextualized media' — using real old footage or photos for a new false claim — is extremely common. Always verify the date independently."},
+{t:"How many people have shared it",ok:false,fb:"High share counts can actually indicate misinformation spreading rapidly. Virality is not validation."},
+{t:"Whether the headline uses quotation marks",ok:false,fb:"Quotation marks in headlines are a style choice, not a credibility marker."}
+]},
+{id:"cross_check",skill:"Cross-referencing",type:"c4",
+text:"You search the main headline on Google News. What result makes you MOST confident a story might be legitimate?",
+hint:"Think about how major news events get covered across the media ecosystem.",
+opts:[
+{t:"Only the original account and a few similar pages mention it",ok:false,fb:"If a major story exists only on one account and its mirrors, that strongly suggests it didn't happen. Real events leave traces across independent outlets."},
+{t:"Reuters, AP and BBC all independently report the same core facts with named sources",ok:true,fb:"Major wire services fact-check before publishing. When they plus independent outlets all report the same core claim with named sources, it has been independently verified."},
+{t:"A celebrity with millions of followers has retweeted it",ok:false,fb:"Social amplification is not verification. Celebrities share misinformation regularly — audience size doesn't make a claim true."},
+{t:"The story appears on a site that looks exactly like a major news website",ok:false,fb:"Clone sites are a common tactic. Always verify by navigating directly to the real outlet's homepage."}
+]},
+{id:"rank_steps",skill:"Verification order",type:"rank",
+text:"Put these verification steps in the order a professional fact-checker would follow them.",
+hint:"There's a logical sequence: start cheap and fast, escalate to more complex tools.",
+items:[
+{t:"Check the URL and publication date",order:0},
+{t:"Search the claim on major news sites (Google News, Reuters)",order:1},
+{t:"Look up the source account's history and credibility",order:2},
+{t:"Use a reverse image search on photos in the post",order:3},
+{t:"Consult a professional fact-checking database (Snopes, Full Fact)",order:4}
+]}
+];
 
-function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const P3_QS=[
+{id:"factcheck_tool",skill:"Fact-check tools",type:"tool",
+text:"Use the fact-check search tool to look up the main claim in this post.",
+hint:"Professional fact-checkers have already investigated many viral claims.",
+toolLabel:"Open fact-check database",toolIcon:"ti-search",
+toolResult:null,
+opts:[
+{t:"Marked 'FALSE' or 'MISLEADING' by a verified fact-checking org",ok:true,fb:"If a professional org has already debunked it, your job is nearly done. Note the organisation and date of debunking."},
+{t:"No results found in fact-check databases",ok:false,fb:"No result means the claim is too new or too niche to have been checked yet — continue to the next tool. Absence of a fact-check is not confirmation it's true."}
+]},
+{id:"reverse_img",skill:"Image verification",type:"tool",
+text:"The post contains a striking image. Use reverse image search to find its original source.",
+hint:"'Zombie images' — old photos used out of context — are one of the most common deception tactics.",
+toolLabel:"Run reverse image search",toolIcon:"ti-photo-search",
+toolResult:null,
+opts:[
+{t:"The image is original and matches the date and location claimed",ok:false,fb:"Good — an original, contextually correct image is a positive signal. But it doesn't confirm the text claims are true. Continue investigating."},
+{t:"The image was taken years ago in a completely different context",ok:true,fb:"You've found a 'zombie image' — old or unrelated media repurposed for a new claim. This is direct evidence of deception, even if other details are accurate."}
+]},
+{id:"deepfake",skill:"AI detection",type:"tool",
+text:"The post includes a video of a public figure making a shocking statement. Analyse it for AI manipulation.",
+hint:"Look for: unnatural blinking, jaw inconsistencies, hair flickering, lip-sync errors, strange lighting on the face.",
+toolLabel:"Run deepfake detection",toolIcon:"ti-cpu",
+toolResult:null,
+opts:[
+{t:"Shadows and blinking look natural; no rendering artifacts detected",ok:false,fb:"A clean result is reassuring, but deepfakes are improving rapidly. Always corroborate with other sources even if detection tools find nothing."},
+{t:"Facial rendering artifacts detected — lip-sync inconsistencies and unnatural jaw movement",ok:true,fb:"Strong evidence of AI manipulation. Document the specific artifacts: jaw, hairline, blinking. This constitutes technical proof to include in a fact-check report."}
+]},
+{id:"credibility_meter",skill:"Final verdict",type:"meter",
+text:"Based on all your investigation, set the Credibility Meter and issue your final verdict.",
+hint:"Weigh all the evidence you've gathered across all three phases.",
+meterLabel:"Credibility level"}
+];
+
+let selCase=null,phase=1,qQueue=[],qIdx=0,score=0,phaseScores=[0,0,0],answers=[],toolsUsed={};
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 
 function renderIntro(){
-  const el=document.getElementById('screen-intro');
-  el.style.display='block';
-  el.innerHTML=`
-  <div style="padding:0.5rem 0">
-    <div class="header">
-      <div class="source-dot">MF</div>
-      <div><div style="font-weight:500;font-size:15px;color:#1a1a1a">Max Factwell</div><div style="font-size:12px;color:#888780">News Detective — Phase 1: Critical Thinking</div></div>
+  const el=document.getElementById('scr-intro');
+  el.innerHTML=`<div style="padding:1rem 0">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
+      <div class="avatar" style="width:36px;height:36px;font-size:14px">MF</div>
+      <div><div style="font-weight:500;font-size:15px;color:var(--color-text-primary)">Max Factwell</div><div style="font-size:12px;color:var(--color-text-secondary)">News Detective — Full Investigation</div></div>
     </div>
-    <p class="intro-title">Choose a case to investigate</p>
-    <p class="intro-sub">Each case is based on a real misinformation pattern. You'll apply critical thinking skills to analyse the claim — no technical tools yet, just your mind. Questions are randomised, so each replay is different.</p>
-    <div class="case-select" id="case-select"></div>
-    <button class="opt-btn start-btn" id="start-btn" disabled style="opacity:.4;cursor:not-allowed">Start investigation →</button>
+    <p class="intro-title">Choose your case</p>
+    <p class="intro-sub">Each case is based on a real misinformation pattern. You'll work through all three phases — Critical Thinking, Initial Verification, and Technical Tools — earning points at each stage.</p>
+    <div class="case-grid" id="case-grid"></div>
+    <button class="opt" id="start-btn" disabled style="opacity:.4;cursor:not-allowed;width:100%;text-align:center">Begin investigation ↗</button>
   </div>`;
-  const grid=document.getElementById('case-select');
+  const grid=document.getElementById('case-grid');
   CASES.forEach(c=>{
     const card=document.createElement('div');
-    card.className='case-card';
-    card.innerHTML=`<div class="case-tag">${c.tag}</div><div class="case-title">${c.title}</div>`;
-    card.onclick=()=>{
-      document.querySelectorAll('.case-card').forEach(x=>x.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedCase=c;
-      const btn=document.getElementById('start-btn');
-      btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
-    };
+    card.className='c-card';
+    card.innerHTML=`<div class="c-tag">${c.tag}</div><div class="c-title">${c.title}</div>`;
+    card.onclick=()=>{document.querySelectorAll('.c-card').forEach(x=>x.classList.remove('picked'));card.classList.add('picked');selCase=c;const b=document.getElementById('start-btn');b.disabled=false;b.style.opacity='1';b.style.cursor='pointer'};
     grid.appendChild(card);
   });
-  document.getElementById('start-btn').onclick=startGame;
+  document.getElementById('start-btn').onclick=()=>{if(!selCase)return;startPhase(1)};
 }
 
-function startGame(){
-  if(!selectedCase)return;
-  questionQueue=shuffle(QUESTIONS).slice(0,5);
-  currentQIdx=0;score=0;answers=[];
-  document.getElementById('screen-intro').style.display='none';
-  document.getElementById('screen-game').style.display='block';
-  renderQuestion();
+function startPhase(p){
+  phase=p;
+  document.getElementById('scr-intro').style.display='none';
+  document.getElementById('scr-game').style.display='none';
+  document.getElementById('scr-verdict').style.display='none';
+  const pi=document.getElementById('scr-phase-intro');
+  pi.style.display='block';
+  const defs=[
+    {num:1,title:"Phase 1 — Critical thinking",sub:"The Mind Filter",desc:"Before touching any tools, apply your analytical instincts. Examine the post's language, intent, sourcing style, and your own potential biases.",skills:["Emotional tone","Confirmation bias","Intent analysis","Evidence quality","Red flag recognition"]},
+    {num:2,title:"Phase 2 — Initial verification",sub:"The Digital Footprint",desc:"Now investigate the source, URL, timing, and whether the story is corroborated. These are the checks any journalist would run in the first ten minutes.",skills:["Source credibility","URL analysis","Temporal context","Cross-referencing","Verification order"]},
+    {num:3,title:"Phase 3 — Technical tools",sub:"The Digital Lab",desc:"Use real investigative tools: fact-check databases, reverse image search, and AI deepfake detection. Issue your final verdict with evidence.",skills:["Fact-check tools","Image verification","AI detection","Final verdict"]}
+  ];
+  const d=defs[p-1];
+  const pills=['Phase 1','Phase 2','Phase 3'].map((lbl,i)=>`<div class="p-pill ${i+1<p?'done':i+1===p?'act':''}">${i+1<p?'<i class="ti ti-check" aria-hidden="true"></i> ':''} ${lbl}</div>`).join('');
+  pi.innerHTML=`<div style="padding:1rem 0">
+    <div class="phase-pills">${pills}</div>
+    <div class="phase-intro">
+      <div class="phase-intro-title">${d.title}<br><span style="font-size:13px;font-weight:400;color:var(--color-text-secondary)">${d.sub}</span></div>
+      <div class="phase-intro-body" style="margin-top:8px">${d.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${d.skills.map(s=>`<span style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--color-text-secondary)">${s}</span>`).join('')}</div>
+    </div>
+    <button class="opt" style="width:100%;text-align:center" onclick="launchPhase(${p})">Start phase ${p} →</button>
+  </div>`;
 }
 
-function renderQuestion(){
-  const q=questionQueue[currentQIdx];
-  const c=selectedCase;
-  const total=questionQueue.length;
-  const pct=Math.round((currentQIdx/total)*100);
-  const screen=document.getElementById('screen-game');
+function launchPhase(p){
+  document.getElementById('scr-phase-intro').style.display='none';
+  const qs=p===1?P1_QS:p===2?P2_QS:P3_QS;
+  qQueue=p===3?[...P3_QS]:shuffle(qs).slice(0,p===1?5:4);
+  qIdx=0;
+  document.getElementById('scr-game').style.display='block';
+  renderQ();
+}
+
+function renderQ(){
+  const q=qQueue[qIdx];
+  const total=qQueue.length;
+  const pct=Math.round((qIdx/total)*100);
+  const c=selCase;
+  const screen=document.getElementById('scr-game');
+  const phaseName=phase===1?'Phase 1 — Critical thinking':phase===2?'Phase 2 — Initial verification':'Phase 3 — Technical tools';
   screen.innerHTML=`
-    <div class="header">
-      <div class="badge">Phase 1 — Critical Thinking</div>
-      <div class="score-bar"><span class="score-label">Points</span><span class="score-num" id="score-disp">${score}</span></div>
+    <div class="hdr">
+      <span class="phase-badge active">${phaseName}</span>
+      <div class="score-wrap"><span class="score-lbl">Points</span><span class="score-num" id="score-disp">${score}</span></div>
     </div>
-    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="prog-track"><div class="prog-fill" id="prog" style="width:${pct}%"></div></div>
     <div class="news-card">
-      <div class="news-source">
-        <div class="source-dot sm">${c.source.initials}</div>
-        <div><div class="source-name">${c.source.name}</div><div class="source-handle">${c.source.handle}</div></div>
-      </div>
-      <div class="news-headline">${c.title}</div>
-      <div class="news-body">${c.body}</div>
-      <div class="news-meta">${c.meta}</div>
+      <div class="src-row"><div class="avatar">${c.source.i}</div><div><div class="src-name">${c.source.name}</div><div class="src-handle">${c.source.h}</div></div></div>
+      <div class="headline">${c.title}</div>
+      <div class="body-txt">${c.body}</div>
+      ${phase>=2?`<div class="url-bar"><i class="ti ti-world" aria-hidden="true" style="font-size:14px"></i> ${c.url}</div>`:''}
+      <div class="meta">${c.meta}</div>
     </div>
-    <div class="question-card">
-      <div class="q-phase">Question ${currentQIdx+1} of ${total} · ${q.skill}</div>
+    <div class="q-card">
+      <div class="q-phase-lbl">Q${qIdx+1} of ${total} · ${q.skill}</div>
       <div class="q-text">${q.text}</div>
       ${q.hint?`<div class="q-hint"><i class="ti ti-bulb" aria-hidden="true"></i> ${q.hint}</div>`:''}
       <div id="q-body"></div>
-      <div class="feedback" id="feedback"></div>
+      <div class="fb" id="fb"></div>
     </div>
-    <button class="opt-btn next-btn" id="next-btn" style="display:none" onclick="nextQuestion()">${currentQIdx+1<total?'Next question →':'See my results →'}</button>`;
-  if(q.type==='choice4')renderChoice4(q);
-  if(q.type==='drag')renderDrag(q);
+    <button class="opt next-btn" id="next-btn" style="display:none" onclick="nextQ()">${qIdx+1<total?'Next question →':phase<3?`Proceed to Phase ${phase+1} →`:'See final verdict →'}</button>`;
+  if(q.type==='c4')renderC4(q);
+  else if(q.type==='drag')renderDrag(q);
+  else if(q.type==='rank')renderRank(q);
+  else if(q.type==='tool')renderTool(q);
+  else if(q.type==='meter')renderMeter(q);
 }
 
-function renderChoice4(q){
-  const opts=shuffle(q.options);
+function renderC4(q){
+  const opts=shuffle(q.opts);
   const body=document.getElementById('q-body');
-  const grid=document.createElement('div');
-  grid.className='options-grid';
+  const wrap=document.createElement('div');wrap.className='opts';
   opts.forEach(opt=>{
-    const btn=document.createElement('button');
-    btn.className='opt-btn';btn.textContent=opt.label;
+    const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.t;
     btn.onclick=()=>{
-      grid.querySelectorAll('button').forEach(b=>{
-        b.disabled=true;
-        if(b===btn)b.classList.add(opt.correct?'correct':'wrong');
-        else if(b.textContent===opts.find(o=>o.correct)?.label)b.classList.add('reveal');
-      });
-      const pts=opt.correct?20:0;
-      if(opt.correct)score+=pts;
+      wrap.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b===btn)b.classList.add(opt.ok?'ok':'bad');else if(b.textContent===opts.find(o=>o.ok)?.t)b.classList.add('reveal')});
+      const pts=opt.ok?20:0;if(opt.ok)score+=pts;
       document.getElementById('score-disp').textContent=score;
-      answers.push({skill:q.skill,correct:opt.correct});
-      showFeedback(opt.correct,opt.fb,pts);
+      answers.push({skill:q.skill,ok:opt.ok});
+      showFB(opt.ok,opt.fb,pts);
       document.getElementById('next-btn').style.display='block';
     };
-    grid.appendChild(btn);
+    wrap.appendChild(btn);
   });
-  body.appendChild(grid);
+  body.appendChild(wrap);
 }
 
 function renderDrag(q){
   const body=document.getElementById('q-body');
-  body.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div>
-        <div class="drag-label" style="color:#a32d2d"><i class="ti ti-flag" aria-hidden="true"></i> Red flag (suspicious)</div>
-        <div class="drag-area" id="zone-red" data-zone="red"></div>
-      </div>
-      <div>
-        <div class="drag-label" style="color:#3b6d11"><i class="ti ti-shield-check" aria-hidden="true"></i> Green flag (credible)</div>
-        <div class="drag-area" id="zone-green" data-zone="green"></div>
-      </div>
-    </div>
-    <div class="drag-label">Drag these phrases:</div>
-    <div class="drag-area" id="zone-pool" data-zone="pool"></div>
-    <button class="opt-btn" id="drag-submit" style="margin-top:10px;width:100%">Check my sorting →</button>`;
-  const pool=document.getElementById('zone-pool');
+  body.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div><div class="zone-lbl" style="color:var(--color-text-danger)"><i class="ti ti-flag" aria-hidden="true"></i> Red flag</div><div class="drag-zone" id="z-red" data-z="red"></div></div>
+    <div><div class="zone-lbl" style="color:var(--color-text-success)"><i class="ti ti-shield-check" aria-hidden="true"></i> Green flag</div><div class="drag-zone" id="z-green" data-z="green"></div></div>
+  </div>
+  <div class="zone-lbl">Drag these:</div>
+  <div class="drag-zone" id="z-pool" data-z="pool" style="margin-bottom:10px"></div>
+  <button class="opt" id="drag-go" onclick="checkDrag()" style="width:100%">Check my sorting →</button>`;
+  const pool=document.getElementById('z-pool');
   shuffle(q.items).forEach(item=>{
-    const chip=makeChip(item);
+    const chip=document.createElement('div');chip.className='chip';chip.draggable=true;chip.dataset.lbl=item.l;chip.dataset.z=item.z;chip.textContent=item.l;
+    chip.addEventListener('dragstart',e=>e.dataTransfer.setData('text',item.l));
     pool.appendChild(chip);
   });
-  ['zone-red','zone-green','zone-pool'].forEach(id=>{
+  ['z-red','z-green','z-pool'].forEach(id=>{
     const zone=document.getElementById(id);
-    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drop-target')});
-    zone.addEventListener('dragleave',()=>zone.classList.remove('drop-target'));
-    zone.addEventListener('drop',e=>{
-      e.preventDefault();zone.classList.remove('drop-target');
-      const label=e.dataTransfer.getData('text');
-      const chip=document.querySelector(`.chip[data-label="${CSS.escape(label)}"]`);
-      if(chip)zone.appendChild(chip);
-    });
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over')});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+    zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');const lbl=e.dataTransfer.getData('text');const chip=document.querySelector(`.chip[data-lbl="${CSS.escape(lbl)}"]`);if(chip)zone.appendChild(chip)});
   });
-  document.getElementById('drag-submit').onclick=()=>checkDrag(q);
 }
 
-function makeChip(item){
-  const chip=document.createElement('div');
-  chip.className='chip';chip.draggable=true;
-  chip.dataset.label=item.label;chip.dataset.correct=item.correct;
-  chip.textContent=item.label;
-  chip.addEventListener('dragstart',e=>e.dataTransfer.setData('text',item.label));
-  return chip;
-}
-
-function checkDrag(q){
-  const redChips=[...document.getElementById('zone-red').querySelectorAll('.chip')];
-  const greenChips=[...document.getElementById('zone-green').querySelectorAll('.chip')];
-  let correct=0,total=q.items.length;
-  redChips.forEach(c=>{if(c.dataset.correct==='red'){c.classList.add('placed-good');correct++}else c.classList.add('placed-bad')});
-  greenChips.forEach(c=>{if(c.dataset.correct==='green'){c.classList.add('placed-good');correct++}else c.classList.add('placed-bad')});
-  document.querySelectorAll('#zone-pool .chip').forEach(c=>c.classList.add('placed-bad'));
-  document.getElementById('drag-submit').style.display='none';
+function checkDrag(){
+  const q=qQueue[qIdx];
+  const red=[...document.getElementById('z-red').querySelectorAll('.chip')];
+  const green=[...document.getElementById('z-green').querySelectorAll('.chip')];
+  let ok=0,tot=q.items.length;
+  red.forEach(c=>{if(c.dataset.z==='red'){c.classList.add('cok');ok++}else c.classList.add('cbad')});
+  green.forEach(c=>{if(c.dataset.z==='green'){c.classList.add('cok');ok++}else c.classList.add('cbad')});
+  document.querySelectorAll('#z-pool .chip').forEach(c=>c.classList.add('cbad'));
+  document.getElementById('drag-go').style.display='none';
   document.querySelectorAll('.chip').forEach(c=>{c.draggable=false});
-  const pts=Math.round((correct/total)*30);
-  score+=pts;
+  const pts=Math.round((ok/tot)*30);score+=pts;
   document.getElementById('score-disp').textContent=score;
-  answers.push({skill:q.skill,correct:correct>=Math.ceil(total*.7)});
-  showFeedback(correct>=Math.ceil(total*.7),`You placed ${correct} of ${total} items correctly (+${pts} points). Highlighted in green = correct placement.`,pts);
+  answers.push({skill:q.skill,ok:ok>=Math.ceil(tot*.7)});
+  showFB(ok>=Math.ceil(tot*.7),`You placed ${ok} of ${tot} items correctly (+${pts} pts). Green = correct.`,pts);
   document.getElementById('next-btn').style.display='block';
 }
 
-function showFeedback(good,text,pts){
-  const fb=document.getElementById('feedback');
-  fb.className='feedback show '+(good?'good':'bad');
-  fb.innerHTML=`<strong>${good?`+${pts} points — `:'No points — '}</strong>${text}`;
+function renderRank(q){
+  const body=document.getElementById('q-body');
+  const items=shuffle(q.items);
+  let selIdx=null;
+  const wrap=document.createElement('div');wrap.className='opts';wrap.id='rank-wrap';
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');div.className='rank-item';div.dataset.i=i;div.dataset.correct=item.order;
+    div.innerHTML=`<i class="ti ti-grip-vertical" aria-hidden="true"></i><span>${item.t}</span>`;
+    div.onclick=()=>{
+      if(div.classList.contains('rk-ok')||div.classList.contains('rk-bad'))return;
+      if(selIdx===null){div.classList.add('sel');selIdx=i}
+      else{
+        const other=wrap.querySelector(`.rank-item[data-i="${selIdx}"]`);
+        if(other&&other!==div){const tmp=other.innerHTML;other.innerHTML=div.innerHTML;div.innerHTML=tmp;const ti=other.dataset.i,tc=other.dataset.correct;other.dataset.i=div.dataset.i;other.dataset.correct=div.dataset.correct;div.dataset.i=ti;div.dataset.correct=tc;}
+        wrap.querySelectorAll('.rank-item').forEach(x=>x.classList.remove('sel'));selIdx=null;
+      }
+    };
+    wrap.appendChild(div);
+  });
+  body.appendChild(wrap);
+  const btn=document.createElement('button');btn.className='opt';btn.style.width='100%';btn.style.marginTop='8px';btn.textContent='Check my order →';
+  btn.onclick=()=>{
+    const ranked=[...wrap.querySelectorAll('.rank-item')];
+    let ok=0;
+    ranked.forEach((r,pos)=>{
+      const correct=parseInt(r.dataset.correct)===pos;
+      if(correct)ok++;
+      r.classList.add(correct?'rk-ok':'rk-bad');r.style.cursor='default';
+    });
+    btn.remove();
+    const pts=Math.round((ok/ranked.length)*25);score+=pts;
+    document.getElementById('score-disp').textContent=score;
+    answers.push({skill:q.skill,ok:ok>=Math.ceil(ranked.length*.6)});
+    showFB(ok>=Math.ceil(ranked.length*.6),`${ok} of ${ranked.length} steps in the correct order (+${pts} pts). The correct sequence: check URL/date → search major news sites → check account history → reverse image search → professional fact-check database.`,pts);
+    document.getElementById('next-btn').style.display='block';
+  };
+  body.appendChild(btn);
 }
 
-function nextQuestion(){
-  currentQIdx++;
-  if(currentQIdx>=questionQueue.length){showVerdict();return;}
-  renderQuestion();
+function renderTool(q){
+  const body=document.getElementById('q-body');
+  const c=selCase;
+  const resultText=q.id==='reverse_img'?c.imgResult:q.id==='factcheck_tool'?c.factResult:c.deepfakeResult;
+  body.innerHTML=`
+    <button class="tool-btn" id="tool-open" style="width:100%;margin-bottom:10px">
+      <i class="ti ${q.toolIcon}" aria-hidden="true" style="font-size:18px"></i> ${q.toolLabel}
+    </button>
+    <div class="tool-result" id="tool-result"><i class="ti ti-report-search" aria-hidden="true" style="font-size:15px"></i> <strong>Result:</strong> ${resultText}</div>
+    <div class="opts" id="tool-opts" style="display:none"></div>`;
+  document.getElementById('tool-open').onclick=()=>{
+    document.getElementById('tool-open').classList.add('used');
+    document.getElementById('tool-open').innerHTML=`<i class="ti ti-check" aria-hidden="true" style="font-size:18px"></i> ${q.toolLabel} — result received`;
+    document.getElementById('tool-result').classList.add('show');
+    const opts=document.getElementById('tool-opts');opts.style.display='flex';
+    const p=document.createElement('p');p.style.cssText='font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px';p.textContent='What does this result tell you?';opts.appendChild(p);
+    q.opts.forEach(opt=>{
+      const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.t;
+      btn.onclick=()=>{
+        opts.querySelectorAll('button').forEach(b=>{b.disabled=true;if(b===btn)b.classList.add(opt.ok?'ok':'bad');else if(b.textContent===q.opts.find(o=>o.ok)?.t)b.classList.add('reveal')});
+        const pts=opt.ok?20:0;if(opt.ok)score+=pts;
+        document.getElementById('score-disp').textContent=score;
+        answers.push({skill:q.skill,ok:opt.ok});
+        showFB(opt.ok,opt.fb,pts);
+        document.getElementById('next-btn').style.display='block';
+      };
+      opts.appendChild(btn);
+    });
+  };
+}
+
+function renderMeter(q){
+  const body=document.getElementById('q-body');
+  let mval=50;
+  body.innerHTML=`
+    <div class="meter-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:6px"><span>Not credible</span><span>Highly credible</span></div>
+      <div class="meter-track"><div class="meter-fill" id="mfill" style="width:50%"></div></div>
+      <input type="range" min="0" max="100" value="50" step="1" id="mslider" style="width:100%;margin-top:6px">
+      <div style="text-align:center;font-size:13px;color:var(--color-text-secondary);margin-top:4px">Credibility: <strong id="mval-disp">50%</strong></div>
+    </div>
+    <div class="opts" style="margin-top:10px">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px">Issue your final verdict:</p>
+      <button class="opt" id="v-true">TRUE — the claim is credible and well-sourced</button>
+      <button class="opt" id="v-misleading">MISLEADING — partially true but decontextualised</button>
+      <button class="opt" id="v-false">FALSE — the claim is fabricated or manipulated</button>
+    </div>`;
+  const slider=document.getElementById('mslider');
+  const fill=document.getElementById('mfill');
+  const valDisp=document.getElementById('mval-disp');
+  slider.oninput=()=>{
+    mval=parseInt(slider.value);
+    fill.style.width=mval+'%';
+    valDisp.textContent=mval+'%';
+    fill.className='meter-fill'+(mval>=70?' high':mval>=40?' mid':'');
+  };
+  ['v-true','v-misleading','v-false'].forEach(id=>{
+    document.getElementById(id).onclick=()=>{
+      const correct=id==='v-false';
+      ['v-true','v-misleading','v-false'].forEach(x=>{const b=document.getElementById(x);b.disabled=true;if(x===id)b.classList.add(correct?'ok':'bad');else if(x==='v-false')b.classList.add('reveal')});
+      slider.disabled=true;
+      const pts=correct?25:0;if(correct)score+=pts;
+      document.getElementById('score-disp').textContent=score;
+      answers.push({skill:q.skill,ok:correct});
+      showFB(correct,correct?`Correct! All three phases pointed to the same conclusion: this story is FALSE. Your credibility meter was set to ${mval}% — a professional fact-checker would put it below 15%.`:`The correct verdict is FALSE. Review the evidence from all three phases: fabricated source, recycled image, debunked by fact-checkers, and AI-manipulated video.`,pts);
+      document.getElementById('next-btn').style.display='block';
+    };
+  });
+}
+
+function showFB(ok,text,pts){
+  const fb=document.getElementById('fb');
+  fb.className='fb show '+(ok?'good':'bad');
+  fb.innerHTML=`${ok?'<i class="ti ti-circle-check" aria-hidden="true"></i>':'<i class="ti ti-circle-x" aria-hidden="true"></i>'} <strong>${ok&&pts>0?`+${pts} pts — `:'No points — '}</strong>${text}`;
+}
+
+function nextQ(){
+  qIdx++;
+  if(qIdx>=qQueue.length){
+    phaseScores[phase-1]=score-(phaseScores.slice(0,phase-1).reduce((a,b)=>a+b,0));
+    if(phase<3){startPhase(phase+1)}else{showVerdict()}
+    return;
+  }
+  renderQ();
 }
 
 function showVerdict(){
-  document.getElementById('screen-game').style.display='none';
-  const v=document.getElementById('screen-verdict');
-  v.style.display='block';
-  const maxScore=questionQueue.reduce((s,q)=>s+(q.type==='drag'?30:20),0);
+  document.getElementById('scr-game').style.display='none';
+  const v=document.getElementById('scr-verdict');v.style.display='block';
+  const maxScore=170;
   const pct=Math.round((score/maxScore)*100);
   let tier,icon,sub;
-  if(pct>=80){tier='Master Detective';icon='🔍';sub='Outstanding work, Agent. You applied all critical thinking skills systematically. Your instincts are sharp — keep them that way.'}
-  else if(pct>=55){tier='Good Agent';icon='🕵️';sub='Solid performance. You caught most of the major signals, but a few slipped through. Review your missed questions to sharpen your edge.'}
-  else{tier='Keep Training';icon='📋';sub='Misinformation is tricky by design. Now you know what to look for — replay with a different case to build your instincts.'}
+  if(pct>=80){tier='Master Detective';icon='🔍';sub='Outstanding. You applied every skill across all three phases — critical thinking, source verification, and technical forensics — to reach the correct verdict.'}
+  else if(pct>=55){tier='Good Agent';icon='🕵️';sub='Solid work. You caught most of the key signals but a few slipped through. Review your missed questions — they reveal where your blind spots are.'}
+  else{tier='Keep Training';icon='📋';sub='Misinformation is engineered to fool you. Now you know what the traps look like — replay with a different case to build your instincts systematically.'}
 
-  const skillMap={};
-  answers.forEach(a=>{if(!skillMap[a.skill])skillMap[a.skill]={c:0,t:0};skillMap[a.skill].t++;if(a.correct)skillMap[a.skill].c++});
-  const skillRows=Object.entries(skillMap).map(([k,v])=>`
-    <div class="skill-row">
-      <div class="skill-name">${k}</div>
-      <div class="skill-bar"><div class="skill-fill" style="width:${Math.round((v.c/v.t)*100)}%"></div></div>
-      <div style="font-size:12px;color:#888780;width:28px;text-align:right">${v.c}/${v.t}</div>
-    </div>`).join('');
+  const skillMap={};answers.forEach(a=>{if(!skillMap[a.skill])skillMap[a.skill]={c:0,t:0};skillMap[a.skill].t++;if(a.ok)skillMap[a.skill].c++});
+  const skillRows=Object.entries(skillMap).map(([k,val])=>`<div class="skill-row"><div class="skill-name">${k}</div><div class="skill-bar"><div class="skill-fill" style="width:${Math.round((val.c/val.t)*100)}%"></div></div><div style="font-size:12px;color:var(--color-text-secondary);width:28px;text-align:right">${val.c}/${val.t}</div></div>`).join('');
 
-  v.innerHTML=`
-    <div class="verdict">
-      <div class="verdict-icon">${icon}</div>
-      <div class="verdict-title">${tier}</div>
-      <div class="verdict-sub">Score: <strong>${score}/${maxScore}</strong> (${pct}%)<br>${sub}</div>
-      <div class="skill-breakdown">
-        <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:10px">Skills breakdown</div>
-        ${skillRows}
-      </div>
-      <div class="info-box">
-        <div class="info-box-title">About this case</div>
-        <div class="info-box-body"><strong>Verdict: ${selectedCase.verdict}</strong><br>${selectedCase.realContext}</div>
-      </div>
-      <button class="opt-btn replay-btn" onclick="replayGame()" style="width:100%">Try a different case →</button>
-    </div>`;
+  const phaseNames=['Phase 1','Phase 2','Phase 3'];
+  const phaseBreak=phaseScores.map((ps,i)=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span style="color:var(--color-text-secondary)">${phaseNames[i]}</span><span style="color:var(--color-text-primary);font-weight:500">${ps} pts</span></div>`).join('');
+
+  v.innerHTML=`<div class="verdict-wrap">
+    <div class="v-icon">${icon}</div>
+    <div class="v-title">${tier}</div>
+    <div class="v-sub">Total score: <strong>${score} / ${maxScore}</strong> (${pct}%)<br>${sub}</div>
+    <div class="skill-box">
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px">Skills breakdown</div>
+      ${skillRows}
+    </div>
+    <div class="skill-box">
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px">Points by phase</div>
+      ${phaseBreak}
+    </div>
+    <div class="case-box">
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">About this case — verdict: <span style="color:var(--color-text-danger)">${selCase.verdict}</span></div>
+      <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6">${selCase.realContext}</div>
+    </div>
+    <button class="opt" style="width:100%;text-align:center" onclick="restart()">Investigate a different case ↗</button>
+  </div>`;
 }
 
-function replayGame(){
-  document.getElementById('screen-verdict').style.display='none';
-  selectedCase=null;
-  renderIntro();
+function restart(){
+  document.getElementById('scr-verdict').style.display='none';
+  document.getElementById('scr-intro').style.display='block';
+  selCase=null;score=0;phaseScores=[0,0,0];answers=[];phase=1;
+  document.querySelectorAll('.c-card').forEach(c=>c.classList.remove('picked'));
+  const b=document.getElementById('start-btn');if(b){b.disabled=true;b.style.opacity='.4';b.style.cursor='not-allowed';}
 }
 
 renderIntro();
 </script>
-</body>
-</html>
