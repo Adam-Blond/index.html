@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The News Detective — Phase 1: Critical Thinking</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f4f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+#app{width:100%;max-width:680px;background:#fff;border-radius:16px;padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+.header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+.badge{background:#f1efe8;border:0.5px solid #d3d1c7;border-radius:8px;padding:4px 10px;font-size:12px;color:#5f5e5a}
+.score-bar{display:flex;gap:8px;align-items:center;margin-left:auto}
+.score-num{font-size:20px;font-weight:500;color:#1a1a1a}
+.score-label{font-size:12px;color:#888780}
+.source-dot{width:36px;height:36px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#185fa5;flex-shrink:0}
+.source-dot.sm{width:28px;height:28px;font-size:11px}
+
+.news-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.news-source{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.source-name{font-size:13px;font-weight:500;color:#1a1a1a}
+.source-handle{font-size:12px;color:#888780}
+.news-headline{font-size:15px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:6px}
+.news-body{font-size:13px;color:#5f5e5a;line-height:1.6}
+.news-meta{font-size:11px;color:#b4b2a9;margin-top:8px}
+
+.question-card{background:#f5f4f0;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.q-phase{font-size:11px;color:#888780;letter-spacing:.04em;margin-bottom:4px;text-transform:uppercase}
+.q-text{font-size:14px;color:#1a1a1a;font-weight:500;line-height:1.5;margin-bottom:12px}
+.q-hint{font-size:12px;color:#5f5e5a;margin-bottom:12px;font-style:italic}
+.options-grid{display:flex;flex-direction:column;gap:8px}
+
+.opt-btn{background:#fff;border:0.5px solid #b4b2a9;border-radius:8px;padding:10px 14px;font-size:13px;color:#1a1a1a;cursor:pointer;text-align:left;transition:background .15s,border .15s;line-height:1.4;width:100%}
+.opt-btn:hover{background:#f1efe8;border-color:#888780}
+.opt-btn.correct{background:#eaf3de;border-color:#639922;color:#3b6d11}
+.opt-btn.wrong{background:#fcebeb;border-color:#e24b4a;color:#a32d2d}
+.opt-btn.reveal{background:#eaf3de;border-color:#639922;color:#3b6d11;opacity:.6}
+.opt-btn:disabled{cursor:default}
+
+.feedback{border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.5;margin-top:8px;display:none}
+.feedback.show{display:block}
+.feedback.good{background:#eaf3de;color:#3b6d11;border:0.5px solid #639922}
+.feedback.bad{background:#fcebeb;color:#a32d2d;border:0.5px solid #e24b4a}
+
+.drag-area{background:#fff;border:0.5px solid #b4b2a9;border-radius:8px;padding:8px;min-height:44px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.drag-area.drop-target{border-color:#378add;background:#e6f1fb}
+.chip{background:#f1efe8;border:0.5px solid #d3d1c7;border-radius:20px;padding:5px 12px;font-size:12px;color:#1a1a1a;cursor:grab;user-select:none;transition:opacity .15s}
+.chip:active{cursor:grabbing;opacity:.7}
+.chip.placed-good{background:#eaf3de;border-color:#639922;color:#3b6d11}
+.chip.placed-bad{background:#fcebeb;border-color:#e24b4a;color:#a32d2d}
+.drag-label{font-size:12px;color:#5f5e5a;margin-bottom:4px}
+
+.next-btn{margin-top:1rem;width:100%}
+.progress-track{height:4px;background:#f1efe8;border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.progress-fill{height:100%;background:#378add;border-radius:2px;transition:width .4s}
+
+.verdict{text-align:center;padding:1.5rem 1rem}
+.verdict-icon{font-size:48px;margin-bottom:12px}
+.verdict-title{font-size:22px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
+.verdict-sub{font-size:14px;color:#5f5e5a;margin-bottom:1.5rem;line-height:1.6}
+.skill-breakdown{background:#f5f4f0;border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left}
+.skill-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.skill-name{font-size:12px;color:#5f5e5a;width:110px;flex-shrink:0}
+.skill-bar{flex:1;height:6px;background:#fff;border-radius:3px;overflow:hidden}
+.skill-fill{height:100%;border-radius:3px;background:#378add}
+
+.intro-title{font-size:22px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
+.intro-sub{font-size:14px;color:#5f5e5a;line-height:1.6;margin-bottom:1.5rem}
+.case-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.case-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:12px;cursor:pointer;transition:border .15s}
+.case-card:hover{border-color:#888780}
+.case-card.selected{border-color:#378add;background:#e6f1fb}
+.case-tag{font-size:11px;color:#888780;margin-bottom:4px}
+.case-title{font-size:13px;font-weight:500;color:#1a1a1a;line-height:1.4}
+.start-btn{width:100%}
+
+.info-box{background:#f5f4f0;border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left}
+.info-box-title{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
+.info-box-body{font-size:13px;color:#5f5e5a;line-height:1.6}
+
+@media(max-width:480px){
+  .case-select{grid-template-columns:1fr}
+  body{padding:1rem .5rem}
+  #app{padding:1.25rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<h2 class="sr-only">News Detective — Phase 1: Critical Thinking trainer. Practice spotting misinformation using real-world examples.</h2>
+<div id="screen-intro"></div>
+<div id="screen-game" style="display:none"></div>
+<div id="screen-verdict" style="display:none"></div>
+</div>
+
+<script>
+const CASES=[
+{
+  id:"climate",tag:"Science & Health",
+  title:"\"Volcanic eruptions release more CO₂ than humans, scientists confirm\"",
+  source:{initials:"NG",name:"NaturalGeo News",handle:"@NaturalGeoNews"},
+  body:"A widely-shared post claims that volcanic activity is the primary driver of rising CO₂ levels, making human emissions irrelevant. The post cites 'multiple geologists' and includes dramatic photos of erupting volcanoes.",
+  meta:"Shared 84,000 times · March 2024",
+  verdict:"FAKE",
+  realContext:"US Geological Survey data shows human emissions are 60–100× greater than all volcanic activity combined. This claim has been debunked repeatedly but resurfaces regularly."
+},{
+  id:"migration",tag:"Politics & Society",
+  title:"\"Government secretly planning to house 10,000 migrants in local schools during summer\"",
+  source:{initials:"LV",name:"LocalVoice247",handle:"@localvoice247_news"},
+  body:"A post with an alarming headline claims local authorities have signed contracts to use school buildings as temporary housing this summer, based on 'documents obtained exclusively'. No official names or document numbers are provided.",
+  meta:"Shared 210,000 times · June 2024",
+  verdict:"FAKE",
+  realContext:"No such policy existed. The 'documents' were never shown. This is a common template for political misinformation — vague sourcing + emotional headline + local specificity to seem credible."
+},{
+  id:"health",tag:"Health & Medicine",
+  title:"\"Hospital confirms: drinking alkaline water cures early-stage cancer, doctors shocked\"",
+  source:{initials:"HW",name:"HealthWellness Today",handle:"@healthwellnesstoday"},
+  body:"Post claims a major hospital has 'quietly' acknowledged that patients drinking alkaline water showed 'remarkable' tumor reduction. Quotes an unnamed oncologist and links to a premium health supplement store.",
+  meta:"Shared 430,000 times · January 2024",
+  verdict:"FAKE",
+  realContext:"No peer-reviewed study or hospital has made this claim. The post is designed to sell supplements. The body regulates blood pH tightly regardless of what you drink — this is basic physiology."
+},{
+  id:"election",tag:"Elections & Democracy",
+  title:"\"Leaked memo shows election officials ordered to change votes in key districts\"",
+  source:{initials:"PV",name:"PatriotVoiceUS",handle:"@PatriotVoiceUS_Real"},
+  body:"An account created 3 weeks ago posts a blurry image of a supposed internal memo, claiming widespread coordination to manipulate ballot counts. The account has 12 followers but the post went viral via retweets from larger accounts.",
+  meta:"Shared 900,000 times · November 2023",
+  verdict:"FAKE",
+  realContext:"Election officials from both parties, independent monitors, and courts found no evidence of coordinated fraud. The 'memo' image was fabricated. New accounts spreading explosive election content just before votes are a documented misinformation tactic."
+}];
+
+const QUESTIONS=[
+{
+  id:"emotional_tone",skill:"Emotional tone",type:"choice4",
+  text:"Which word best describes the emotional register of this headline and post?",
+  hint:"Misinformation often uses language designed to make you feel something before you think.",
+  options:[
+    {label:"Neutral — reports facts without loaded language",correct:false,fb:"Neutral language tends to use precise numbers and attribution. This post uses vague superlatives and alarm language."},
+    {label:"Alarming — designed to create urgency or fear",correct:true,fb:"Correct. Phrases like 'secretly', 'shocked', or 'confirm' signal emotional manipulation. Real news organizations use measured language even for serious topics."},
+    {label:"Analytical — breaks down evidence step by step",correct:false,fb:"Analytical content cites specific data and acknowledges counterarguments — this post does neither."},
+    {label:"Promotional — selling a product or service",correct:false,fb:"While some misinformation is promotional, the primary tactic here is emotional alarm, not advertising."}
+  ]
+},{
+  id:"source_check",skill:"Source credibility",type:"choice4",
+  text:"You look up the account that posted this. Which of these would make you MOST suspicious?",
+  hint:"Think about what legitimate news organizations and experts look like online.",
+  options:[
+    {label:"The account was verified 5 years ago and has a track record of accurate reporting",correct:false,fb:"Age and verification matter — but remember, even established accounts can share misinformation."},
+    {label:"The account was created last month and has no posting history before this viral story",correct:true,fb:"Exactly right. Accounts created suddenly around a specific story, with no prior history, are a major red flag. This is a documented pattern in coordinated misinformation campaigns."},
+    {label:"The account links to its About page with an editorial team and physical address",correct:false,fb:"Transparency about team and location is a positive signal — though fake sites can still include this."},
+    {label:"The account posts across many topics and has been active for years",correct:false,fb:"Longevity and topical breadth are generally positive signals for credibility — though not guarantees."}
+  ]
+},{
+  id:"consensus",skill:"Cross-checking",type:"choice4",
+  text:"You search the main claim on Google News. What result would make you MOST confident the story might be legitimate?",
+  hint:"Think about how major news stories get covered across the media ecosystem.",
+  options:[
+    {label:"Only the original account and a few similar anonymous pages mention it",correct:false,fb:"If a major story exists only on one account and its mirrors, that is a strong signal it didn't happen."},
+    {label:"Reuters, AP, and BBC all independently report the same core facts with named sources",correct:true,fb:"Correct. When major wire services plus independent outlets report the same core claim with named sources, the story has been independently verified."},
+    {label:"A celebrity with millions of followers has retweeted it",correct:false,fb:"Social amplification is not the same as verification. Celebrities share misinformation regularly."},
+    {label:"The story appears on a site that looks exactly like a major news website",correct:false,fb:"Clone sites are a common tactic. Always check the full URL carefully and look for the story on the real outlet's site directly."}
+  ]
+},{
+  id:"evidence",skill:"Evidence quality",type:"choice4",
+  text:"The post cites 'experts' and 'scientists'. Which citation pattern is a red flag?",
+  hint:"Think about what real academic or professional citation looks like.",
+  options:[
+    {label:"'According to Dr. Sarah Chen, epidemiologist at Johns Hopkins, in a 2023 Lancet study...'",correct:false,fb:"This is good sourcing — a named expert, institution, publication, and year. You can verify all of these independently."},
+    {label:"'Multiple geologists confirm...' / 'Experts say...' / 'Sources revealed...'",correct:true,fb:"Exactly. Vague sourcing is a classic misinformation pattern. If experts truly said something newsworthy, their names and institution would be cited."},
+    {label:"'The IPCC's 2023 synthesis report (AR6) states on page 14...'",correct:false,fb:"Specific document references with page numbers are strong sourcing signals — you can look it up directly."},
+    {label:"'A peer-reviewed meta-analysis of 47 studies published in Nature...'",correct:false,fb:"Peer review, specific journal, and study count are all positive credibility signals."}
+  ]
+},{
+  id:"intent",skill:"Intent analysis",type:"choice4",
+  text:"What does the post want you to DO after reading it?",
+  hint:"Real journalism informs. Misinformation usually wants to trigger an action or emotion.",
+  options:[
+    {label:"Understand a complex situation through multiple perspectives",correct:false,fb:"Presenting multiple perspectives and letting the reader decide is a hallmark of quality journalism."},
+    {label:"Share it immediately, before checking — 'people need to know this now'",correct:true,fb:"Urgency that pressures you to share before thinking is a manipulation tactic. Misinformation spreads fastest in the first hour — that's not accidental."},
+    {label:"Read the primary sources and form your own view",correct:false,fb:"Encouraging primary source reading is the opposite of what misinformation does."},
+    {label:"Contact relevant authorities if you have relevant information",correct:false,fb:"Legitimate journalism on public safety topics often includes official contact information."}
+  ]
+},{
+  id:"drag_flags",skill:"Red flag recognition",type:"drag",
+  text:"Drag each phrase into the correct category: red flag (suspicious) or green flag (credible signal).",
+  hint:"Some features make a story more trustworthy; others should raise your suspicion.",
+  items:[
+    {label:"'Experts say'",correct:"red"},
+    {label:"Named journalist + editor",correct:"green"},
+    {label:"'SHOCKING'",correct:"red"},
+    {label:"Published date and update",correct:"green"},
+    {label:"No named sources",correct:"red"},
+    {label:"Links to original study",correct:"green"},
+    {label:"Account created last week",correct:"red"},
+    {label:"Verified outlet badge",correct:"green"},
+  ]
+},{
+  id:"bias_check",skill:"Confirmation bias",type:"choice4",
+  text:"The post confirms something you already believed. What is the most important next step?",
+  hint:"Our instinct to trust things we agree with is exactly what misinformation exploits.",
+  options:[
+    {label:"Share it — it confirms what you've known for a long time",correct:false,fb:"This is confirmation bias in action. Agreeing with a claim is not evidence it's true."},
+    {label:"Apply the same verification checks you'd use on a story you disagree with",correct:true,fb:"Correct. The antidote to confirmation bias is deliberate symmetry — asking 'would I accept this sourcing if the conclusion were different?' is one of the most powerful critical thinking tools."},
+    {label:"It must be true — you've seen similar claims before",correct:false,fb:"Frequency of exposure is not evidence of truth. This is called the illusory truth effect."},
+    {label:"Ask only people who share your view whether it seems accurate",correct:false,fb:"Echo chambers amplify our existing beliefs rather than testing them."}
+  ]
+}];
+
+let selectedCase=null,questionQueue=[],currentQIdx=0,score=0,answers=[];
+
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function renderIntro(){
+  const el=document.getElementById('screen-intro');
+  el.style.display='block';
+  el.innerHTML=`
+  <div style="padding:0.5rem 0">
+    <div class="header">
+      <div class="source-dot">MF</div>
+      <div><div style="font-weight:500;font-size:15px;color:#1a1a1a">Max Factwell</div><div style="font-size:12px;color:#888780">News Detective — Phase 1: Critical Thinking</div></div>
+    </div>
+    <p class="intro-title">Choose a case to investigate</p>
+    <p class="intro-sub">Each case is based on a real misinformation pattern. You'll apply critical thinking skills to analyse the claim — no technical tools yet, just your mind. Questions are randomised, so each replay is different.</p>
+    <div class="case-select" id="case-select"></div>
+    <button class="opt-btn start-btn" id="start-btn" disabled style="opacity:.4;cursor:not-allowed">Start investigation →</button>
+  </div>`;
+  const grid=document.getElementById('case-select');
+  CASES.forEach(c=>{
+    const card=document.createElement('div');
+    card.className='case-card';
+    card.innerHTML=`<div class="case-tag">${c.tag}</div><div class="case-title">${c.title}</div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.case-card').forEach(x=>x.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedCase=c;
+      const btn=document.getElementById('start-btn');
+      btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
+    };
+    grid.appendChild(card);
+  });
+  document.getElementById('start-btn').onclick=startGame;
+}
+
+function startGame(){
+  if(!selectedCase)return;
+  questionQueue=shuffle(QUESTIONS).slice(0,5);
+  currentQIdx=0;score=0;answers=[];
+  document.getElementById('screen-intro').style.display='none';
+  document.getElementById('screen-game').style.display='block';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=questionQueue[currentQIdx];
+  const c=selectedCase;
+  const total=questionQueue.length;
+  const pct=Math.round((currentQIdx/total)*100);
+  const screen=document.getElementById('screen-game');
+  screen.innerHTML=`
+    <div class="header">
+      <div class="badge">Phase 1 — Critical Thinking</div>
+      <div class="score-bar"><span class="score-label">Points</span><span class="score-num" id="score-disp">${score}</span></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="news-card">
+      <div class="news-source">
+        <div class="source-dot sm">${c.source.initials}</div>
+        <div><div class="source-name">${c.source.name}</div><div class="source-handle">${c.source.handle}</div></div>
+      </div>
+      <div class="news-headline">${c.title}</div>
+      <div class="news-body">${c.body}</div>
+      <div class="news-meta">${c.meta}</div>
+    </div>
+    <div class="question-card">
+      <div class="q-phase">Question ${currentQIdx+1} of ${total} · ${q.skill}</div>
+      <div class="q-text">${q.text}</div>
+      ${q.hint?`<div class="q-hint"><i class="ti ti-bulb" aria-hidden="true"></i> ${q.hint}</div>`:''}
+      <div id="q-body"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <button class="opt-btn next-btn" id="next-btn" style="display:none" onclick="nextQuestion()">${currentQIdx+1<total?'Next question →':'See my results →'}</button>`;
+  if(q.type==='choice4')renderChoice4(q);
+  if(q.type==='drag')renderDrag(q);
+}
+
+function renderChoice4(q){
+  const opts=shuffle(q.options);
+  const body=document.getElementById('q-body');
+  const grid=document.createElement('div');
+  grid.className='options-grid';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';btn.textContent=opt.label;
+    btn.onclick=()=>{
+      grid.querySelectorAll('button').forEach(b=>{
+        b.disabled=true;
+        if(b===btn)b.classList.add(opt.correct?'correct':'wrong');
+        else if(b.textContent===opts.find(o=>o.correct)?.label)b.classList.add('reveal');
+      });
+      const pts=opt.correct?20:0;
+      if(opt.correct)score+=pts;
+      document.getElementById('score-disp').textContent=score;
+      answers.push({skill:q.skill,correct:opt.correct});
+      showFeedback(opt.correct,opt.fb,pts);
+      document.getElementById('next-btn').style.display='block';
+    };
+    grid.appendChild(btn);
+  });
+  body.appendChild(grid);
+}
+
+function renderDrag(q){
+  const body=document.getElementById('q-body');
+  body.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div>
+        <div class="drag-label" style="color:#a32d2d"><i class="ti ti-flag" aria-hidden="true"></i> Red flag (suspicious)</div>
+        <div class="drag-area" id="zone-red" data-zone="red"></div>
+      </div>
+      <div>
+        <div class="drag-label" style="color:#3b6d11"><i class="ti ti-shield-check" aria-hidden="true"></i> Green flag (credible)</div>
+        <div class="drag-area" id="zone-green" data-zone="green"></div>
+      </div>
+    </div>
+    <div class="drag-label">Drag these phrases:</div>
+    <div class="drag-area" id="zone-pool" data-zone="pool"></div>
+    <button class="opt-btn" id="drag-submit" style="margin-top:10px;width:100%">Check my sorting →</button>`;
+  const pool=document.getElementById('zone-pool');
+  shuffle(q.items).forEach(item=>{
+    const chip=makeChip(item);
+    pool.appendChild(chip);
+  });
+  ['zone-red','zone-green','zone-pool'].forEach(id=>{
+    const zone=document.getElementById(id);
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drop-target')});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('drop-target'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('drop-target');
+      const label=e.dataTransfer.getData('text');
+      const chip=document.querySelector(`.chip[data-label="${CSS.escape(label)}"]`);
+      if(chip)zone.appendChild(chip);
+    });
+  });
+  document.getElementById('drag-submit').onclick=()=>checkDrag(q);
+}
+
+function makeChip(item){
+  const chip=document.createElement('div');
+  chip.className='chip';chip.draggable=true;
+  chip.dataset.label=item.label;chip.dataset.correct=item.correct;
+  chip.textContent=item.label;
+  chip.addEventListener('dragstart',e=>e.dataTransfer.setData('text',item.label));
+  return chip;
+}
+
+function checkDrag(q){
+  const redChips=[...document.getElementById('zone-red').querySelectorAll('.chip')];
+  const greenChips=[...document.getElementById('zone-green').querySelectorAll('.chip')];
+  let correct=0,total=q.items.length;
+  redChips.forEach(c=>{if(c.dataset.correct==='red'){c.classList.add('placed-good');correct++}else c.classList.add('placed-bad')});
+  greenChips.forEach(c=>{if(c.dataset.correct==='green'){c.classList.add('placed-good');correct++}else c.classList.add('placed-bad')});
+  document.querySelectorAll('#zone-pool .chip').forEach(c=>c.classList.add('placed-bad'));
+  document.getElementById('drag-submit').style.display='none';
+  document.querySelectorAll('.chip').forEach(c=>{c.draggable=false});
+  const pts=Math.round((correct/total)*30);
+  score+=pts;
+  document.getElementById('score-disp').textContent=score;
+  answers.push({skill:q.skill,correct:correct>=Math.ceil(total*.7)});
+  showFeedback(correct>=Math.ceil(total*.7),`You placed ${correct} of ${total} items correctly (+${pts} points). Highlighted in green = correct placement.`,pts);
+  document.getElementById('next-btn').style.display='block';
+}
+
+function showFeedback(good,text,pts){
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(good?'good':'bad');
+  fb.innerHTML=`<strong>${good?`+${pts} points — `:'No points — '}</strong>${text}`;
+}
+
+function nextQuestion(){
+  currentQIdx++;
+  if(currentQIdx>=questionQueue.length){showVerdict();return;}
+  renderQuestion();
+}
+
+function showVerdict(){
+  document.getElementById('screen-game').style.display='none';
+  const v=document.getElementById('screen-verdict');
+  v.style.display='block';
+  const maxScore=questionQueue.reduce((s,q)=>s+(q.type==='drag'?30:20),0);
+  const pct=Math.round((score/maxScore)*100);
+  let tier,icon,sub;
+  if(pct>=80){tier='Master Detective';icon='🔍';sub='Outstanding work, Agent. You applied all critical thinking skills systematically. Your instincts are sharp — keep them that way.'}
+  else if(pct>=55){tier='Good Agent';icon='🕵️';sub='Solid performance. You caught most of the major signals, but a few slipped through. Review your missed questions to sharpen your edge.'}
+  else{tier='Keep Training';icon='📋';sub='Misinformation is tricky by design. Now you know what to look for — replay with a different case to build your instincts.'}
+
+  const skillMap={};
+  answers.forEach(a=>{if(!skillMap[a.skill])skillMap[a.skill]={c:0,t:0};skillMap[a.skill].t++;if(a.correct)skillMap[a.skill].c++});
+  const skillRows=Object.entries(skillMap).map(([k,v])=>`
+    <div class="skill-row">
+      <div class="skill-name">${k}</div>
+      <div class="skill-bar"><div class="skill-fill" style="width:${Math.round((v.c/v.t)*100)}%"></div></div>
+      <div style="font-size:12px;color:#888780;width:28px;text-align:right">${v.c}/${v.t}</div>
+    </div>`).join('');
+
+  v.innerHTML=`
+    <div class="verdict">
+      <div class="verdict-icon">${icon}</div>
+      <div class="verdict-title">${tier}</div>
+      <div class="verdict-sub">Score: <strong>${score}/${maxScore}</strong> (${pct}%)<br>${sub}</div>
+      <div class="skill-breakdown">
+        <div style="font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:10px">Skills breakdown</div>
+        ${skillRows}
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">About this case</div>
+        <div class="info-box-body"><strong>Verdict: ${selectedCase.verdict}</strong><br>${selectedCase.realContext}</div>
+      </div>
+      <button class="opt-btn replay-btn" onclick="replayGame()" style="width:100%">Try a different case →</button>
+    </div>`;
+}
+
+function replayGame(){
+  document.getElementById('screen-verdict').style.display='none';
+  selectedCase=null;
+  renderIntro();
+}
+
+renderIntro();
+</script>
+</body>
+</html>
