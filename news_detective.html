@@ -1,96 +1,190 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The News Detective — Max Factwell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap" rel="stylesheet">
 <style>
+:root{
+  --bg:#F7F6F2;
+  --surface:#FFFFFF;
+  --surface2:#F0EFE9;
+  --border:#E2E0D8;
+  --border2:#C8C6BC;
+  --text:#1A1917;
+  --text2:#6B6860;
+  --text3:#9E9C95;
+  --accent:#1A1917;
+  --accent-bg:#1A1917;
+  --accent-fg:#F7F6F2;
+  --green:#166534;
+  --green-bg:#DCFCE7;
+  --green-border:#86EFAC;
+  --red:#991B1B;
+  --red-bg:#FEE2E2;
+  --red-border:#FCA5A5;
+  --amber:#92400E;
+  --amber-bg:#FEF3C7;
+  --amber-border:#FCD34D;
+  --blue:#1E40AF;
+  --blue-bg:#EFF6FF;
+  --blue-border:#BFDBFE;
+  --radius:10px;
+  --radius-lg:16px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-#app{padding:1.5rem 1rem;max-width:680px;font-family:var(--font-sans)}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-.hdr{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
-.phase-badge{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:3px 10px;font-size:12px;color:var(--color-text-secondary)}
-.phase-badge.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
-.score-wrap{margin-left:auto;display:flex;gap:6px;align-items:baseline}
-.score-num{font-size:20px;font-weight:500;color:var(--color-text-primary)}
-.score-lbl{font-size:12px;color:var(--color-text-secondary)}
-.prog-track{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:1.25rem;overflow:hidden}
-.prog-fill{height:100%;background:var(--color-border-info);border-radius:2px;transition:width .4s}
-.news-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
-.src-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.avatar{width:28px;height:28px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-info);flex-shrink:0}
-.src-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.src-handle{font-size:12px;color:var(--color-text-secondary)}
-.headline{font-size:15px;font-weight:500;color:var(--color-text-primary);line-height:1.4;margin-bottom:6px}
-.body-txt{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
-.meta{font-size:11px;color:var(--color-text-tertiary);margin-top:8px}
-.url-bar{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 12px;font-size:12px;font-family:var(--font-mono);color:var(--color-text-secondary);margin-top:8px;word-break:break-all}
-.q-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
-.q-phase-lbl{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-.q-text{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:10px}
-.q-hint{font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;font-style:italic}
-.opts{display:flex;flex-direction:column;gap:7px}
-.opt{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 13px;font-size:13px;color:var(--color-text-primary);cursor:pointer;text-align:left;line-height:1.4;transition:background .12s}
-.opt:hover:not(:disabled){background:var(--color-background-secondary)}
-.opt:disabled{cursor:default}
-.opt.ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
-.opt.bad{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
-.opt.reveal{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success);opacity:.55}
-.fb{border-radius:var(--border-radius-md);padding:10px 13px;font-size:13px;line-height:1.5;margin-top:8px;display:none}
-.fb.show{display:block}
-.fb.good{background:var(--color-background-success);color:var(--color-text-success);border:0.5px solid var(--color-border-success)}
-.fb.bad{background:var(--color-background-danger);color:var(--color-text-danger);border:0.5px solid var(--color-border-danger)}
-.drag-zone{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px;min-height:42px;display:flex;flex-wrap:wrap;gap:6px}
-.drag-zone.over{border-color:var(--color-border-info);background:var(--color-background-info)}
-.chip{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--color-text-primary);cursor:grab;user-select:none}
-.chip.cok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
-.chip.cbad{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
-.zone-lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
-.rank-item{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 13px;font-size:13px;color:var(--color-text-primary);cursor:grab;display:flex;align-items:center;gap:8px;user-select:none}
-.rank-item i{color:var(--color-text-tertiary);font-size:16px}
-.rank-item.sel{border-color:var(--color-border-info);background:var(--color-background-info);color:var(--color-text-info)}
-.rank-item.rk-ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
-.rank-item.rk-bad{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
-.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.tool-btn{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:13px;color:var(--color-text-primary);cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;transition:background .12s}
-.tool-btn:hover{background:var(--color-background-secondary)}
-.tool-btn.used{border-color:var(--color-border-success);color:var(--color-text-success)}
-.tool-result{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 13px;font-size:13px;color:var(--color-text-secondary);margin-top:6px;line-height:1.5;display:none}
-.tool-result.show{display:block}
-.meter-wrap{margin:12px 0}
-.meter-track{height:12px;background:var(--color-background-primary);border-radius:6px;overflow:hidden;border:0.5px solid var(--color-border-tertiary)}
-.meter-fill{height:100%;border-radius:6px;transition:width .6s;background:var(--color-border-danger)}
-.meter-fill.mid{background:var(--color-border-warning)}
-.meter-fill.high{background:var(--color-border-success)}
-.next-btn{width:100%;margin-top:1rem}
-.verdict-wrap{text-align:center;padding:1.5rem 1rem}
-.v-icon{font-size:44px;margin-bottom:10px}
-.v-title{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
-.v-sub{font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.25rem}
-.skill-box{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:1rem;text-align:left}
-.skill-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.skill-name{font-size:12px;color:var(--color-text-secondary);width:120px;flex-shrink:0}
-.skill-bar{flex:1;height:6px;background:var(--color-background-primary);border-radius:3px;overflow:hidden}
-.skill-fill{height:100%;border-radius:3px;background:var(--color-border-info);transition:width .6s .2s}
-.case-box{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:1rem;text-align:left}
-.phase-pills{display:flex;gap:6px;margin-bottom:1rem}
-.p-pill{flex:1;text-align:center;padding:6px 8px;border-radius:var(--border-radius-md);font-size:12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);background:var(--color-background-secondary)}
-.p-pill.done{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
-.p-pill.act{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
-.intro-title{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
-.intro-sub{font-size:14px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1.25rem}
-.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
-.c-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;cursor:pointer;transition:border .12s}
-.c-card:hover{border-color:var(--color-border-secondary)}
-.c-card.picked{border-color:var(--color-border-info);background:var(--color-background-info)}
-.c-tag{font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px}
-.c-title{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.4}
-.phase-intro{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1.25rem}
-.phase-intro-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
-.phase-intro-body{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
-</style>
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+#shell{max-width:700px;margin:0 auto;padding:2rem 1.25rem 4rem}
 
-<div id="app">
-<h2 class="sr-only">News Detective — full three-phase game: Critical Thinking, Initial Verification, and Technical Tools. Investigate real misinformation patterns.</h2>
-<div id="scr-intro"></div>
-<div id="scr-phase-intro" style="display:none"></div>
-<div id="scr-game" style="display:none"></div>
-<div id="scr-verdict" style="display:none"></div>
+/* Header */
+.top-bar{display:flex;align-items:center;gap:12px;margin-bottom:2.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
+.logo{width:40px;height:40px;background:var(--accent-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent-fg);font-family:'DM Serif Display',serif;font-size:17px;flex-shrink:0}
+.logo-text{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text)}
+.logo-sub{font-size:12px;color:var(--text3);letter-spacing:.04em}
+.score-wrap{margin-left:auto;text-align:right}
+.score-num{font-size:24px;font-family:'DM Serif Display',serif;color:var(--text)}
+.score-lbl{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase}
+
+/* Progress */
+.prog-wrap{margin-bottom:1.75rem}
+.prog-phases{display:flex;gap:8px;margin-bottom:10px}
+.phase-pip{flex:1;text-align:center;padding:5px 8px;border-radius:6px;font-size:11px;border:1px solid var(--border);color:var(--text3);background:var(--surface)}
+.phase-pip.done{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.phase-pip.act{background:var(--accent-bg);border-color:var(--accent-bg);color:var(--accent-fg)}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent-bg);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
+.card-sm{background:var(--surface2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem}
+
+/* News card */
+.src-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text2);flex-shrink:0}
+.src-name{font-size:13px;font-weight:500}
+.src-handle{font-size:12px;color:var(--text3)}
+.headline{font-family:'DM Serif Display',serif;font-size:18px;line-height:1.3;margin-bottom:8px}
+.body-txt{font-size:13px;color:var(--text2);line-height:1.65}
+.url-bar{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-family:'DM Mono',monospace;color:var(--text2);margin-top:10px;word-break:break-all}
+.news-meta{font-size:11px;color:var(--text3);margin-top:8px;letter-spacing:.02em}
+
+/* Question */
+.q-phase-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.q-text{font-size:15px;font-weight:500;line-height:1.5;margin-bottom:8px}
+.q-hint{font-size:12px;color:var(--text2);font-style:italic;margin-bottom:12px;padding-left:12px;border-left:2px solid var(--border2)}
+
+/* Buttons / options */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--text);cursor:pointer;text-align:left;line-height:1.5;font-family:'DM Sans',sans-serif;transition:border-color .12s,background .12s}
+.opt:hover:not(:disabled){background:var(--surface2);border-color:var(--border2)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.opt.bad{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+.opt.reveal{background:var(--green-bg);border-color:var(--green-border);color:var(--green);opacity:.55}
+.opt.primary{background:var(--accent-bg);color:var(--accent-fg);border-color:var(--accent-bg);font-weight:500}
+.opt.primary:hover:not(:disabled){opacity:.9}
+.opt.wide{width:100%;text-align:center}
+
+/* Feedback */
+.fb{border-radius:var(--radius);padding:10px 14px;font-size:13px;line-height:1.55;margin-top:10px;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.fb.bad{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+
+/* Drag & drop */
+.drag-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.zone-lbl{font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
+.zone-lbl.red{color:var(--red)}
+.zone-lbl.green{color:var(--green)}
+.drag-zone{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--radius);padding:8px;min-height:46px;display:flex;flex-wrap:wrap;gap:6px;transition:border-color .12s,background .12s}
+.drag-zone.over{border-color:var(--accent-bg);background:var(--surface2)}
+.pool-lbl{font-size:12px;color:var(--text3);margin-bottom:5px}
+.chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--text);cursor:grab;user-select:none;transition:opacity .12s}
+.chip:active{opacity:.7}
+.chip.cok{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.chip.cbad{background:var(--red-bg);border-color:var(--red-border);color:var(--red)}
+
+/* Rank */
+.rank-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none;transition:border-color .12s,background .12s}
+.rank-item .grip{color:var(--text3);font-size:18px;letter-spacing:-2px}
+.rank-item.sel{border-color:var(--accent-bg);background:var(--surface2)}
+.rank-item.rk-ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green);cursor:default}
+.rank-item.rk-bad{background:var(--red-bg);border-color:var(--red-border);color:var(--red);cursor:default}
+
+/* Tool mechanic */
+.tool-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;font-size:13px;color:var(--text);cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;width:100%;margin-bottom:10px;font-family:'DM Sans',sans-serif;transition:border-color .12s,background .12s}
+.tool-btn:hover{background:var(--surface2);border-color:var(--border2)}
+.tool-btn.used{border-color:var(--green-border);background:var(--green-bg);color:var(--green)}
+.tool-icon{width:32px;height:32px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tool-result{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.55;display:none}
+.tool-result.show{display:block}
+
+/* Credibility meter */
+.meter-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.meter-track{height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;border:1px solid var(--border);margin-bottom:8px}
+.meter-fill{height:100%;border-radius:5px;transition:width .3s,background .3s}
+input[type=range]{width:100%;accent-color:var(--accent-bg);margin-bottom:4px}
+.meter-val{text-align:center;font-size:13px;color:var(--text2);margin-bottom:12px}
+
+/* Intro / case selection */
+.intro-header{margin-bottom:1.75rem}
+.intro-title{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.15;margin-bottom:8px}
+.intro-sub{font-size:14px;color:var(--text2);line-height:1.65;max-width:520px}
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.c-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:border-color .12s,transform .12s}
+.c-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.c-card.picked{border-color:var(--accent-bg);background:var(--surface2);box-shadow:0 0 0 2px var(--accent-bg)}
+.c-tag{font-size:11px;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
+.c-title{font-size:13px;font-weight:500;line-height:1.45}
+
+/* Phase intro */
+.phase-intro-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem}
+.p-num{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.p-title{font-family:'DM Serif Display',serif;font-size:26px;margin-bottom:4px}
+.p-sub{font-size:13px;color:var(--text2);font-style:italic;margin-bottom:10px}
+.p-desc{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:14px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:6px}
+.skill-tag{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:11px;color:var(--text2)}
+
+/* Verdict */
+.verdict-wrap{text-align:center;padding:2rem 1rem}
+.v-icon{font-size:52px;margin-bottom:14px}
+.v-title{font-family:'DM Serif Display',serif;font-size:32px;margin-bottom:8px}
+.v-sub{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:1.75rem;max-width:480px;margin-left:auto;margin-right:auto}
+.skill-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem;text-align:left}
+.skill-box-title{font-size:13px;font-weight:500;margin-bottom:12px}
+.skill-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.skill-name{font-size:12px;color:var(--text2);width:130px;flex-shrink:0}
+.skill-bar{flex:1;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.skill-fill{height:100%;border-radius:3px;background:var(--accent-bg);transition:width .6s .2s}
+.skill-count{font-size:12px;color:var(--text3);width:28px;text-align:right}
+.phase-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)}
+.phase-row:last-child{border-bottom:none}
+.case-box{background:var(--surface2);border-radius:var(--radius);padding:1rem;margin-bottom:1.25rem;text-align:left}
+.verdict-badge{display:inline-block;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.case-context{font-size:13px;color:var(--text2);line-height:1.65}
+
+@media(max-width:480px){
+  .case-grid{grid-template-columns:1fr}
+  .drag-grid{grid-template-columns:1fr}
+  .headline{font-size:16px}
+  .intro-title{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="shell">
+  <div class="top-bar">
+    <div class="logo">MF</div>
+    <div><div class="logo-text">The News Detective</div><div class="logo-sub">Max Factwell · Media Literacy Training</div></div>
+    <div class="score-wrap"><div class="score-num" id="score-disp">0</div><div class="score-lbl">Points</div></div>
+  </div>
+  <div id="scr-intro"></div>
+  <div id="scr-phase-intro" style="display:none"></div>
+  <div id="scr-game" style="display:none"></div>
+  <div id="scr-verdict" style="display:none"></div>
 </div>
 
 <script>
@@ -104,30 +198,27 @@ imgResult:"Reverse image search: photo is from a 2010 Iceland eruption, not a re
 factResult:"Snopes (2023): FALSE. Human emissions are 60–100× greater than all volcanic CO₂ combined, per USGS data.",
 deepfakeResult:"No AI manipulation detected in imagery.",
 realContext:"Human emissions are 60–100× greater than all volcanic activity combined (USGS). The volcano photo was taken in 2010 in Iceland — unrelated to any recent story. This claim resurfaces cyclically.",
-verdict:"FAKE"
-},
+verdict:"FAKE"},
 {id:"migration",tag:"Politics",title:'"Government secretly housing 10,000 migrants in schools this summer"',
 source:{i:"LV",name:"LocalVoice247",h:"@localvoice247_news"},
 body:"A post claims local authorities signed contracts to use school buildings as temporary housing. The report cites 'documents obtained exclusively' with no official names or document numbers.",
 meta:"Shared 210,000 times · June 2024",
 url:"localvoice247.news.co.uk/migrants-schools-exclusive",
-imgResult:"Reverse image search: photo shows a school gym used during a 2015 refugee crisis in Germany — not the UK.",
+imgResult:"Reverse image search: photo shows a school gym used during the 2015 refugee crisis in Germany — not the UK.",
 factResult:"Full Fact (UK): No evidence found. No council has confirmed such contracts. The 'documents' have not been produced.",
 deepfakeResult:"Image metadata shows the photo was taken in 2015, not 2024.",
 realContext:"No such policy existed. The 'documents' were never shown. This follows a template: vague sourcing + local specificity + emotional stakes to seem credible.",
-verdict:"FAKE"
-},
+verdict:"FAKE"},
 {id:"health",tag:"Health",title:'"Hospital confirms: alkaline water cures early-stage cancer, doctors shocked"',
 source:{i:"HW",name:"HealthWellness Today",h:"@healthwellnesstoday"},
-body:"Post claims a major hospital has 'quietly' acknowledged patients drinking alkaline water showed 'remarkable' tumor reduction. Quotes an unnamed oncologist, links to a premium supplement store.",
+body:"Post claims a major hospital has 'quietly' acknowledged patients drinking alkaline water showed 'remarkable' tumour reduction. Quotes an unnamed oncologist, links to a premium supplement store.",
 meta:"Shared 430,000 times · January 2024",
 url:"healthwellness-today.net/alkaline-cancer-cure",
 imgResult:"Photo of 'doctor' is a stock image sold on Getty Images, used by dozens of unrelated websites.",
 factResult:"Reuters Fact Check: FALSE. No peer-reviewed study or hospital has made this claim. The body tightly regulates blood pH regardless of diet.",
 deepfakeResult:"The 'video testimonial' shows facial rendering artifacts consistent with AI synthesis around the jaw and hairline.",
 realContext:"This is a classic supplement scam structure. The body regulates pH tightly — this is basic physiology. The 'doctor' image is stock photography.",
-verdict:"FAKE"
-},
+verdict:"FAKE"},
 {id:"election",tag:"Elections",title:'"Leaked memo: election officials ordered to change votes in key districts"',
 source:{i:"PV",name:"PatriotVoiceUS",h:"@PatriotVoiceUS_Real"},
 body:"An account created 3 weeks ago posts a blurry image of a supposed internal memo. It claims widespread coordination to manipulate ballot counts. The account has 12 followers but was amplified by larger accounts.",
@@ -136,9 +227,9 @@ url:"patriotvoice-us.info/leaked-election-memo",
 imgResult:"The 'memo' image matches a template sold on a document design website — it is not an official government format.",
 factResult:"AP Fact Check: FALSE. Election officials from both parties, independent monitors and courts found no evidence of coordinated fraud.",
 deepfakeResult:"Document forensics: font metadata shows the file was created 2 days before it was allegedly 'leaked'. Inconsistent kerning and official seal is a low-resolution copy-paste.",
-realContext:"The memo was fabricated. New anonymous accounts that appear just before elections and spread explosive fraud claims are a documented coordinated misinformation pattern.",
-verdict:"FAKE"
-}];
+realContext:"The memo was fabricated. New anonymous accounts that appear just before elections spreading explosive fraud claims are a documented coordinated misinformation pattern.",
+verdict:"FAKE"}
+];
 
 const P1_QS=[
 {id:"tone",skill:"Emotional tone",type:"c4",
@@ -172,7 +263,7 @@ opts:[
 text:"The post cites 'experts' and 'scientists'. Which citation pattern is a red flag?",
 hint:"Think about what real academic citation looks like.",
 opts:[
-{t:"'Dr. Sarah Chen, epidemiologist at Johns Hopkins, in a 2023 Lancet study...'",ok:false,fb:"Good sourcing: named expert, institution, publication, year. You can verify all of these independently."},
+{t:"'Dr. Sarah Chen, epidemiologist at Johns Hopkins, in a 2023 Lancet study...'",ok:false,fb:"Good sourcing: named expert, institution, publication, year. You can verify all independently."},
 {t:"'Multiple experts confirm...' / 'Sources revealed...' / 'Scientists say...'",ok:true,fb:"Exactly. Vague sourcing is a classic misinformation pattern. If experts truly said something, their names would be cited. 'Sources say' is unfalsifiable by design."},
 {t:"'The IPCC's 2023 synthesis report (AR6) states on page 14...'",ok:false,fb:"Specific document references are strong sourcing signals — you can look them up directly."},
 {t:"'A peer-reviewed meta-analysis of 47 studies published in Nature...'",ok:false,fb:"Peer review, specific journal, and study count are all positive signals. Misinformation rarely provides this because it would be easily disproved."}
@@ -191,43 +282,43 @@ items:[
 const P2_QS=[
 {id:"src_age",skill:"Source credibility",type:"c4",
 text:"You check the account that posted this. Which observation is most suspicious?",
-hint:"Think about what legitimate news organizations look like online.",
+hint:"Think about what legitimate news organisations look like online.",
 opts:[
-{t:"The account was verified 5 years ago with a track record of credible reporting",ok:false,fb:"Age and verification are positive signals — though even established accounts can share misinformation."},
-{t:"The account was created last month with no posting history before this story",ok:true,fb:"Accounts created suddenly around a specific story with no prior history are a major red flag. This is a documented pattern in coordinated campaigns."},
-{t:"The account links to an About page with an editorial team and physical address",ok:false,fb:"Transparency about team and location is a positive signal — though fake sites can include this too."},
-{t:"The account posts across many topics and has been active for years",ok:false,fb:"Longevity and topical breadth are generally positive credibility signals."}
+{t:"Verified 5 years ago with a track record of credible reporting",ok:false,fb:"Age and verification are positive signals — though even established accounts can share misinformation."},
+{t:"Created last month with no posting history before this story",ok:true,fb:"Accounts created suddenly around a specific story with no prior history are a major red flag. This is a documented pattern in coordinated campaigns."},
+{t:"Links to an About page with an editorial team and physical address",ok:false,fb:"Transparency about team and location is a positive signal — though fake sites can include this too."},
+{t:"Posts across many topics and has been active for years",ok:false,fb:"Longevity and topical breadth are generally positive credibility signals."}
 ]},
 {id:"url_check",skill:"URL analysis",type:"c4",
-text:`Look at this URL: "${CASES[0].url}". What raises the most suspicion?`,
+text:"Look at the URL carefully. What raises the most suspicion?",
 hint:"Misinformation sites often mimic legitimate outlets with subtle changes.",
 opts:[
-{t:"The story is about a controversial topic",ok:false,fb:"Topic alone doesn't indicate a fake source. Legitimate outlets cover controversial topics all the time."},
-{t:"The domain uses .co instead of .com, and has a hyphenated name mimicking a real outlet",ok:true,fb:"Correct. Clone sites use .co, .net, .xyz or hyphens to mimic trusted brands. Always check the full URL directly, not just the headline."},
-{t:"The URL is long",ok:false,fb:"URL length is not a reliability indicator. Legitimate outlets often have long URLs with dates and categories."},
-{t:"The URL doesn't use HTTPS",ok:false,fb:"HTTPS indicates encryption, not accuracy. Fake sites often use HTTPS too — it's a security feature, not a truth indicator."}
+{t:"The story covers a controversial topic",ok:false,fb:"Topic alone doesn't indicate a fake source. Legitimate outlets cover controversial topics constantly."},
+{t:"The domain uses .co or .info and has a hyphenated name mimicking a real outlet",ok:true,fb:"Correct. Clone sites use .co, .net, .xyz or hyphens to mimic trusted brands. Always check the full URL, not just the headline."},
+{t:"The URL is longer than usual",ok:false,fb:"URL length is not a reliability indicator. Legitimate outlets often have long URLs with dates and categories."},
+{t:"The URL doesn't contain the word 'news'",ok:false,fb:"The presence or absence of 'news' in a URL tells you nothing about credibility."}
 ]},
 {id:"date_check",skill:"Temporal context",type:"c4",
 text:"The post claims this is happening 'right now'. What should you check first?",
 hint:"Old content recycled as current news is one of the most common misinformation tactics.",
 opts:[
-{t:"Whether the writing style is professional",ok:false,fb:"Writing style can signal quality but doesn't tell you whether the event is current. A well-written post can still use old content dishonestly."},
-{t:"The publication date, and whether the images or events match that date",ok:true,fb:"Exactly. 'Decontextualized media' — using real old footage or photos for a new false claim — is extremely common. Always verify the date independently."},
-{t:"How many people have shared it",ok:false,fb:"High share counts can actually indicate misinformation spreading rapidly. Virality is not validation."},
+{t:"Whether the writing style is professional",ok:false,fb:"Writing style can signal quality but doesn't tell you whether the event is current."},
+{t:"The publication date, and whether images or events actually match that date",ok:true,fb:"Exactly. 'Decontextualised media' — using real old footage for a new false claim — is extremely common. Always verify the date independently."},
+{t:"How many people have shared it",ok:false,fb:"High share counts can indicate misinformation spreading rapidly. Virality is not validation."},
 {t:"Whether the headline uses quotation marks",ok:false,fb:"Quotation marks in headlines are a style choice, not a credibility marker."}
 ]},
 {id:"cross_check",skill:"Cross-referencing",type:"c4",
-text:"You search the main headline on Google News. What result makes you MOST confident a story might be legitimate?",
+text:"You search the main headline on Google News. What result most confirms a story could be legitimate?",
 hint:"Think about how major news events get covered across the media ecosystem.",
 opts:[
-{t:"Only the original account and a few similar pages mention it",ok:false,fb:"If a major story exists only on one account and its mirrors, that strongly suggests it didn't happen. Real events leave traces across independent outlets."},
-{t:"Reuters, AP and BBC all independently report the same core facts with named sources",ok:true,fb:"Major wire services fact-check before publishing. When they plus independent outlets all report the same core claim with named sources, it has been independently verified."},
-{t:"A celebrity with millions of followers has retweeted it",ok:false,fb:"Social amplification is not verification. Celebrities share misinformation regularly — audience size doesn't make a claim true."},
-{t:"The story appears on a site that looks exactly like a major news website",ok:false,fb:"Clone sites are a common tactic. Always verify by navigating directly to the real outlet's homepage."}
+{t:"Only the original account and a few similar pages mention it",ok:false,fb:"If a major story exists only on one account and its mirrors, that strongly suggests it didn't happen."},
+{t:"Reuters, AP and BBC all independently report the same core facts with named sources",ok:true,fb:"Major wire services fact-check before publishing. When they and independent outlets all report the same claim with named sources, it has been independently verified."},
+{t:"A celebrity with millions of followers has retweeted it",ok:false,fb:"Social amplification is not verification. Celebrities share misinformation regularly."},
+{t:"The story appears on a site that looks exactly like a major news website",ok:false,fb:"Clone sites are a common tactic. Always navigate directly to the real outlet's homepage to verify."}
 ]},
 {id:"rank_steps",skill:"Verification order",type:"rank",
 text:"Put these verification steps in the order a professional fact-checker would follow them.",
-hint:"There's a logical sequence: start cheap and fast, escalate to more complex tools.",
+hint:"Start cheap and fast; escalate to more complex tools.",
 items:[
 {t:"Check the URL and publication date",order:0},
 {t:"Search the claim on major news sites (Google News, Reuters)",order:1},
@@ -241,17 +332,15 @@ const P3_QS=[
 {id:"factcheck_tool",skill:"Fact-check tools",type:"tool",
 text:"Use the fact-check search tool to look up the main claim in this post.",
 hint:"Professional fact-checkers have already investigated many viral claims.",
-toolLabel:"Open fact-check database",toolIcon:"ti-search",
-toolResult:null,
+toolLabel:"Open fact-check database",toolIcon:"🔍",
 opts:[
-{t:"Marked 'FALSE' or 'MISLEADING' by a verified fact-checking org",ok:true,fb:"If a professional org has already debunked it, your job is nearly done. Note the organisation and date of debunking."},
-{t:"No results found in fact-check databases",ok:false,fb:"No result means the claim is too new or too niche to have been checked yet — continue to the next tool. Absence of a fact-check is not confirmation it's true."}
+{t:"Marked 'FALSE' or 'MISLEADING' by a verified fact-checking organisation",ok:true,fb:"If a professional organisation has already debunked it, your job is nearly done. Note the organisation and date of debunking."},
+{t:"No results found in fact-check databases",ok:false,fb:"No result means the claim is too new or niche to have been checked yet. Absence of a fact-check is not confirmation it's true. Continue to the next tool."}
 ]},
 {id:"reverse_img",skill:"Image verification",type:"tool",
 text:"The post contains a striking image. Use reverse image search to find its original source.",
 hint:"'Zombie images' — old photos used out of context — are one of the most common deception tactics.",
-toolLabel:"Run reverse image search",toolIcon:"ti-photo-search",
-toolResult:null,
+toolLabel:"Run reverse image search",toolIcon:"🖼️",
 opts:[
 {t:"The image is original and matches the date and location claimed",ok:false,fb:"Good — an original, contextually correct image is a positive signal. But it doesn't confirm the text claims are true. Continue investigating."},
 {t:"The image was taken years ago in a completely different context",ok:true,fb:"You've found a 'zombie image' — old or unrelated media repurposed for a new claim. This is direct evidence of deception, even if other details are accurate."}
@@ -259,40 +348,33 @@ opts:[
 {id:"deepfake",skill:"AI detection",type:"tool",
 text:"The post includes a video of a public figure making a shocking statement. Analyse it for AI manipulation.",
 hint:"Look for: unnatural blinking, jaw inconsistencies, hair flickering, lip-sync errors, strange lighting on the face.",
-toolLabel:"Run deepfake detection",toolIcon:"ti-cpu",
-toolResult:null,
+toolLabel:"Run deepfake detection",toolIcon:"🤖",
 opts:[
-{t:"Shadows and blinking look natural; no rendering artifacts detected",ok:false,fb:"A clean result is reassuring, but deepfakes are improving rapidly. Always corroborate with other sources even if detection tools find nothing."},
-{t:"Facial rendering artifacts detected — lip-sync inconsistencies and unnatural jaw movement",ok:true,fb:"Strong evidence of AI manipulation. Document the specific artifacts: jaw, hairline, blinking. This constitutes technical proof to include in a fact-check report."}
+{t:"Shadows and blinking look natural; no rendering artefacts detected",ok:false,fb:"A clean result is reassuring, but deepfakes are improving rapidly. Always corroborate with other sources even if detection tools find nothing."},
+{t:"Facial rendering artefacts detected — lip-sync inconsistencies and unnatural jaw movement",ok:true,fb:"Strong evidence of AI manipulation. Document the specific artefacts: jaw, hairline, blinking. This constitutes technical proof to include in a fact-check report."}
 ]},
 {id:"credibility_meter",skill:"Final verdict",type:"meter",
 text:"Based on all your investigation, set the Credibility Meter and issue your final verdict.",
-hint:"Weigh all the evidence you've gathered across all three phases.",
-meterLabel:"Credibility level"}
+hint:"Weigh all the evidence you've gathered across all three phases."}
 ];
 
-let selCase=null,phase=1,qQueue=[],qIdx=0,score=0,phaseScores=[0,0,0],answers=[],toolsUsed={};
+let selCase=null,phase=1,qQueue=[],qIdx=0,score=0,phaseScores=[0,0,0],answers=[];
 
 function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 
 function renderIntro(){
   const el=document.getElementById('scr-intro');
-  el.innerHTML=`<div style="padding:1rem 0">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
-      <div class="avatar" style="width:36px;height:36px;font-size:14px">MF</div>
-      <div><div style="font-weight:500;font-size:15px;color:var(--color-text-primary)">Max Factwell</div><div style="font-size:12px;color:var(--color-text-secondary)">News Detective — Full Investigation</div></div>
-    </div>
-    <p class="intro-title">Choose your case</p>
-    <p class="intro-sub">Each case is based on a real misinformation pattern. You'll work through all three phases — Critical Thinking, Initial Verification, and Technical Tools — earning points at each stage.</p>
-    <div class="case-grid" id="case-grid"></div>
-    <button class="opt" id="start-btn" disabled style="opacity:.4;cursor:not-allowed;width:100%;text-align:center">Begin investigation ↗</button>
-  </div>`;
+  el.innerHTML=`<div class="intro-header">
+    <div class="intro-title">Choose your case</div>
+    <p class="intro-sub">Each case is based on a real misinformation pattern. Work through all three phases — Critical Thinking, Initial Verification, and Technical Tools — earning points at each stage.</p>
+  </div>
+  <div class="case-grid" id="case-grid"></div>
+  <button class="opt primary wide" id="start-btn" disabled>Begin investigation →</button>`;
   const grid=document.getElementById('case-grid');
   CASES.forEach(c=>{
-    const card=document.createElement('div');
-    card.className='c-card';
+    const card=document.createElement('div');card.className='c-card';
     card.innerHTML=`<div class="c-tag">${c.tag}</div><div class="c-title">${c.title}</div>`;
-    card.onclick=()=>{document.querySelectorAll('.c-card').forEach(x=>x.classList.remove('picked'));card.classList.add('picked');selCase=c;const b=document.getElementById('start-btn');b.disabled=false;b.style.opacity='1';b.style.cursor='pointer'};
+    card.onclick=()=>{document.querySelectorAll('.c-card').forEach(x=>x.classList.remove('picked'));card.classList.add('picked');selCase=c;document.getElementById('start-btn').disabled=false};
     grid.appendChild(card);
   });
   document.getElementById('start-btn').onclick=()=>{if(!selCase)return;startPhase(1)};
@@ -300,27 +382,24 @@ function renderIntro(){
 
 function startPhase(p){
   phase=p;
-  document.getElementById('scr-intro').style.display='none';
-  document.getElementById('scr-game').style.display='none';
-  document.getElementById('scr-verdict').style.display='none';
-  const pi=document.getElementById('scr-phase-intro');
-  pi.style.display='block';
+  ['scr-intro','scr-game','scr-verdict'].forEach(id=>document.getElementById(id).style.display='none');
+  const pi=document.getElementById('scr-phase-intro');pi.style.display='block';
   const defs=[
-    {num:1,title:"Phase 1 — Critical thinking",sub:"The Mind Filter",desc:"Before touching any tools, apply your analytical instincts. Examine the post's language, intent, sourcing style, and your own potential biases.",skills:["Emotional tone","Confirmation bias","Intent analysis","Evidence quality","Red flag recognition"]},
-    {num:2,title:"Phase 2 — Initial verification",sub:"The Digital Footprint",desc:"Now investigate the source, URL, timing, and whether the story is corroborated. These are the checks any journalist would run in the first ten minutes.",skills:["Source credibility","URL analysis","Temporal context","Cross-referencing","Verification order"]},
-    {num:3,title:"Phase 3 — Technical tools",sub:"The Digital Lab",desc:"Use real investigative tools: fact-check databases, reverse image search, and AI deepfake detection. Issue your final verdict with evidence.",skills:["Fact-check tools","Image verification","AI detection","Final verdict"]}
+    {num:1,title:"Critical thinking",sub:"The Mind Filter",desc:"Before touching any tools, apply your analytical instincts. Examine the post's language, intent, sourcing style, and your own potential biases.",skills:["Emotional tone","Confirmation bias","Intent analysis","Evidence quality","Red flag recognition"]},
+    {num:2,title:"Initial verification",sub:"The Digital Footprint",desc:"Investigate the source, URL, timing, and whether the story is corroborated. These are the checks any journalist would run in the first ten minutes.",skills:["Source credibility","URL analysis","Temporal context","Cross-referencing","Verification order"]},
+    {num:3,title:"Technical tools",sub:"The Digital Lab",desc:"Use real investigative tools: fact-check databases, reverse image search, and AI deepfake detection. Issue your final verdict with evidence.",skills:["Fact-check tools","Image verification","AI detection","Final verdict"]}
   ];
   const d=defs[p-1];
-  const pills=['Phase 1','Phase 2','Phase 3'].map((lbl,i)=>`<div class="p-pill ${i+1<p?'done':i+1===p?'act':''}">${i+1<p?'<i class="ti ti-check" aria-hidden="true"></i> ':''} ${lbl}</div>`).join('');
-  pi.innerHTML=`<div style="padding:1rem 0">
-    <div class="phase-pills">${pills}</div>
-    <div class="phase-intro">
-      <div class="phase-intro-title">${d.title}<br><span style="font-size:13px;font-weight:400;color:var(--color-text-secondary)">${d.sub}</span></div>
-      <div class="phase-intro-body" style="margin-top:8px">${d.desc}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${d.skills.map(s=>`<span style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--color-text-secondary)">${s}</span>`).join('')}</div>
-    </div>
-    <button class="opt" style="width:100%;text-align:center" onclick="launchPhase(${p})">Start phase ${p} →</button>
-  </div>`;
+  const pills=['Phase 1','Phase 2','Phase 3'].map((lbl,i)=>`<div class="phase-pip ${i+1<p?'done':i+1===p?'act':''}">${i+1<p?'✓ ':''} ${lbl}</div>`).join('');
+  pi.innerHTML=`<div class="prog-phases" style="margin-bottom:1.5rem">${pills}</div>
+  <div class="phase-intro-card">
+    <div class="p-num">Phase ${p} of 3</div>
+    <div class="p-title">${d.title}</div>
+    <div class="p-sub">${d.sub}</div>
+    <div class="p-desc">${d.desc}</div>
+    <div class="skill-tags">${d.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+  </div>
+  <button class="opt primary wide" onclick="launchPhase(${p})">Start phase ${p} →</button>`;
 }
 
 function launchPhase(p){
@@ -333,33 +412,30 @@ function launchPhase(p){
 }
 
 function renderQ(){
-  const q=qQueue[qIdx];
-  const total=qQueue.length;
-  const pct=Math.round((qIdx/total)*100);
-  const c=selCase;
-  const screen=document.getElementById('scr-game');
+  const q=qQueue[qIdx];const total=qQueue.length;const pct=Math.round((qIdx/total)*100);const c=selCase;
   const phaseName=phase===1?'Phase 1 — Critical thinking':phase===2?'Phase 2 — Initial verification':'Phase 3 — Technical tools';
-  screen.innerHTML=`
-    <div class="hdr">
-      <span class="phase-badge active">${phaseName}</span>
-      <div class="score-wrap"><span class="score-lbl">Points</span><span class="score-num" id="score-disp">${score}</span></div>
+  const pills=['Phase 1','Phase 2','Phase 3'].map((lbl,i)=>`<div class="phase-pip ${i+1<phase?'done':i+1===phase?'act':''}">${i+1<phase?'✓ ':''} ${lbl}</div>`).join('');
+  document.getElementById('scr-game').innerHTML=`
+    <div class="prog-phases">${pills}</div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;margin-top:6px">
+      <span style="font-size:12px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase">${phaseName}</span>
+      <span style="font-size:12px;color:var(--text3)">Q${qIdx+1} of ${total} · ${q.skill}</span>
     </div>
-    <div class="prog-track"><div class="prog-fill" id="prog" style="width:${pct}%"></div></div>
-    <div class="news-card">
+    <div class="card">
       <div class="src-row"><div class="avatar">${c.source.i}</div><div><div class="src-name">${c.source.name}</div><div class="src-handle">${c.source.h}</div></div></div>
       <div class="headline">${c.title}</div>
       <div class="body-txt">${c.body}</div>
-      ${phase>=2?`<div class="url-bar"><i class="ti ti-world" aria-hidden="true" style="font-size:14px"></i> ${c.url}</div>`:''}
-      <div class="meta">${c.meta}</div>
+      ${phase>=2?`<div class="url-bar">🌐 ${c.url}</div>`:''}
+      <div class="news-meta">${c.meta}</div>
     </div>
-    <div class="q-card">
-      <div class="q-phase-lbl">Q${qIdx+1} of ${total} · ${q.skill}</div>
+    <div class="card-sm">
       <div class="q-text">${q.text}</div>
-      ${q.hint?`<div class="q-hint"><i class="ti ti-bulb" aria-hidden="true"></i> ${q.hint}</div>`:''}
+      ${q.hint?`<div class="q-hint">${q.hint}</div>`:''}
       <div id="q-body"></div>
       <div class="fb" id="fb"></div>
     </div>
-    <button class="opt next-btn" id="next-btn" style="display:none" onclick="nextQ()">${qIdx+1<total?'Next question →':phase<3?`Proceed to Phase ${phase+1} →`:'See final verdict →'}</button>`;
+    <button class="opt primary wide" id="next-btn" style="display:none" onclick="nextQ()">${qIdx+1<total?'Next question →':phase<3?`Proceed to Phase ${phase+1} →`:'See final verdict →'}</button>`;
   if(q.type==='c4')renderC4(q);
   else if(q.type==='drag')renderDrag(q);
   else if(q.type==='rank')renderRank(q);
@@ -368,8 +444,7 @@ function renderQ(){
 }
 
 function renderC4(q){
-  const opts=shuffle(q.opts);
-  const body=document.getElementById('q-body');
+  const opts=shuffle(q.opts);const body=document.getElementById('q-body');
   const wrap=document.createElement('div');wrap.className='opts';
   opts.forEach(opt=>{
     const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.t;
@@ -388,13 +463,13 @@ function renderC4(q){
 
 function renderDrag(q){
   const body=document.getElementById('q-body');
-  body.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-    <div><div class="zone-lbl" style="color:var(--color-text-danger)"><i class="ti ti-flag" aria-hidden="true"></i> Red flag</div><div class="drag-zone" id="z-red" data-z="red"></div></div>
-    <div><div class="zone-lbl" style="color:var(--color-text-success)"><i class="ti ti-shield-check" aria-hidden="true"></i> Green flag</div><div class="drag-zone" id="z-green" data-z="green"></div></div>
+  body.innerHTML=`<div class="drag-grid">
+    <div><div class="zone-lbl red">🚩 Red flag</div><div class="drag-zone" id="z-red" data-z="red"></div></div>
+    <div><div class="zone-lbl green">✅ Green flag</div><div class="drag-zone" id="z-green" data-z="green"></div></div>
   </div>
-  <div class="zone-lbl">Drag these:</div>
-  <div class="drag-zone" id="z-pool" data-z="pool" style="margin-bottom:10px"></div>
-  <button class="opt" id="drag-go" onclick="checkDrag()" style="width:100%">Check my sorting →</button>`;
+  <div class="pool-lbl">Drag these phrases:</div>
+  <div class="drag-zone" id="z-pool" style="margin-bottom:10px"></div>
+  <button class="opt primary wide" id="drag-go">Check my sorting →</button>`;
   const pool=document.getElementById('z-pool');
   shuffle(q.items).forEach(item=>{
     const chip=document.createElement('div');chip.className='chip';chip.draggable=true;chip.dataset.lbl=item.l;chip.dataset.z=item.z;chip.textContent=item.l;
@@ -407,80 +482,70 @@ function renderDrag(q){
     zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
     zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');const lbl=e.dataTransfer.getData('text');const chip=document.querySelector(`.chip[data-lbl="${CSS.escape(lbl)}"]`);if(chip)zone.appendChild(chip)});
   });
-}
-
-function checkDrag(){
-  const q=qQueue[qIdx];
-  const red=[...document.getElementById('z-red').querySelectorAll('.chip')];
-  const green=[...document.getElementById('z-green').querySelectorAll('.chip')];
-  let ok=0,tot=q.items.length;
-  red.forEach(c=>{if(c.dataset.z==='red'){c.classList.add('cok');ok++}else c.classList.add('cbad')});
-  green.forEach(c=>{if(c.dataset.z==='green'){c.classList.add('cok');ok++}else c.classList.add('cbad')});
-  document.querySelectorAll('#z-pool .chip').forEach(c=>c.classList.add('cbad'));
-  document.getElementById('drag-go').style.display='none';
-  document.querySelectorAll('.chip').forEach(c=>{c.draggable=false});
-  const pts=Math.round((ok/tot)*30);score+=pts;
-  document.getElementById('score-disp').textContent=score;
-  answers.push({skill:q.skill,ok:ok>=Math.ceil(tot*.7)});
-  showFB(ok>=Math.ceil(tot*.7),`You placed ${ok} of ${tot} items correctly (+${pts} pts). Green = correct.`,pts);
-  document.getElementById('next-btn').style.display='block';
+  document.getElementById('drag-go').onclick=()=>{
+    const red=[...document.getElementById('z-red').querySelectorAll('.chip')];
+    const green=[...document.getElementById('z-green').querySelectorAll('.chip')];
+    let ok=0,tot=q.items.length;
+    red.forEach(c=>{if(c.dataset.z==='red'){c.classList.add('cok');ok++}else c.classList.add('cbad')});
+    green.forEach(c=>{if(c.dataset.z==='green'){c.classList.add('cok');ok++}else c.classList.add('cbad')});
+    document.querySelectorAll('#z-pool .chip').forEach(c=>c.classList.add('cbad'));
+    document.getElementById('drag-go').style.display='none';
+    document.querySelectorAll('.chip').forEach(c=>{c.draggable=false});
+    const pts=Math.round((ok/tot)*30);score+=pts;
+    document.getElementById('score-disp').textContent=score;
+    answers.push({skill:q.skill,ok:ok>=Math.ceil(tot*.7)});
+    showFB(ok>=Math.ceil(tot*.7),`You placed ${ok} of ${tot} items correctly (+${pts} pts). Green highlight = correct placement.`,pts);
+    document.getElementById('next-btn').style.display='block';
+  };
 }
 
 function renderRank(q){
   const body=document.getElementById('q-body');
-  const items=shuffle(q.items);
-  let selIdx=null;
+  const items=shuffle(q.items);let selIdx=null;
   const wrap=document.createElement('div');wrap.className='opts';wrap.id='rank-wrap';
   items.forEach((item,i)=>{
     const div=document.createElement('div');div.className='rank-item';div.dataset.i=i;div.dataset.correct=item.order;
-    div.innerHTML=`<i class="ti ti-grip-vertical" aria-hidden="true"></i><span>${item.t}</span>`;
+    div.innerHTML=`<span class="grip">⠿</span><span>${item.t}</span>`;
     div.onclick=()=>{
       if(div.classList.contains('rk-ok')||div.classList.contains('rk-bad'))return;
       if(selIdx===null){div.classList.add('sel');selIdx=i}
       else{
         const other=wrap.querySelector(`.rank-item[data-i="${selIdx}"]`);
-        if(other&&other!==div){const tmp=other.innerHTML;other.innerHTML=div.innerHTML;div.innerHTML=tmp;const ti=other.dataset.i,tc=other.dataset.correct;other.dataset.i=div.dataset.i;other.dataset.correct=div.dataset.correct;div.dataset.i=ti;div.dataset.correct=tc;}
+        if(other&&other!==div){const th=other.innerHTML;other.innerHTML=div.innerHTML;div.innerHTML=th;const ti=other.dataset.i,tc=other.dataset.correct;other.dataset.i=div.dataset.i;other.dataset.correct=div.dataset.correct;div.dataset.i=ti;div.dataset.correct=tc}
         wrap.querySelectorAll('.rank-item').forEach(x=>x.classList.remove('sel'));selIdx=null;
       }
     };
     wrap.appendChild(div);
   });
   body.appendChild(wrap);
-  const btn=document.createElement('button');btn.className='opt';btn.style.width='100%';btn.style.marginTop='8px';btn.textContent='Check my order →';
+  const btn=document.createElement('button');btn.className='opt primary';btn.style.width='100%';btn.style.marginTop='8px';btn.textContent='Check my order →';
   btn.onclick=()=>{
-    const ranked=[...wrap.querySelectorAll('.rank-item')];
-    let ok=0;
-    ranked.forEach((r,pos)=>{
-      const correct=parseInt(r.dataset.correct)===pos;
-      if(correct)ok++;
-      r.classList.add(correct?'rk-ok':'rk-bad');r.style.cursor='default';
-    });
+    const ranked=[...wrap.querySelectorAll('.rank-item')];let ok=0;
+    ranked.forEach((r,pos)=>{const correct=parseInt(r.dataset.correct)===pos;if(correct)ok++;r.classList.add(correct?'rk-ok':'rk-bad');r.style.cursor='default'});
     btn.remove();
     const pts=Math.round((ok/ranked.length)*25);score+=pts;
     document.getElementById('score-disp').textContent=score;
     answers.push({skill:q.skill,ok:ok>=Math.ceil(ranked.length*.6)});
-    showFB(ok>=Math.ceil(ranked.length*.6),`${ok} of ${ranked.length} steps in the correct order (+${pts} pts). The correct sequence: check URL/date → search major news sites → check account history → reverse image search → professional fact-check database.`,pts);
+    showFB(ok>=Math.ceil(ranked.length*.6),`${ok} of ${ranked.length} steps in the correct order (+${pts} pts). Correct sequence: check URL/date → search major news → check account history → reverse image search → professional fact-check database.`,pts);
     document.getElementById('next-btn').style.display='block';
   };
   body.appendChild(btn);
 }
 
 function renderTool(q){
-  const body=document.getElementById('q-body');
   const c=selCase;
   const resultText=q.id==='reverse_img'?c.imgResult:q.id==='factcheck_tool'?c.factResult:c.deepfakeResult;
-  body.innerHTML=`
-    <button class="tool-btn" id="tool-open" style="width:100%;margin-bottom:10px">
-      <i class="ti ${q.toolIcon}" aria-hidden="true" style="font-size:18px"></i> ${q.toolLabel}
-    </button>
-    <div class="tool-result" id="tool-result"><i class="ti ti-report-search" aria-hidden="true" style="font-size:15px"></i> <strong>Result:</strong> ${resultText}</div>
-    <div class="opts" id="tool-opts" style="display:none"></div>`;
+  const body=document.getElementById('q-body');
+  body.innerHTML=`<button class="tool-btn" id="tool-open"><span class="tool-icon">${q.toolIcon}</span><span>${q.toolLabel}</span></button>
+  <div class="tool-result" id="tool-result"><strong>Result:</strong> ${resultText}</div>
+  <div class="opts" id="tool-opts" style="display:none"></div>`;
   document.getElementById('tool-open').onclick=()=>{
-    document.getElementById('tool-open').classList.add('used');
-    document.getElementById('tool-open').innerHTML=`<i class="ti ti-check" aria-hidden="true" style="font-size:18px"></i> ${q.toolLabel} — result received`;
+    const tb=document.getElementById('tool-open');
+    tb.innerHTML=`<span class="tool-icon">✓</span><span>${q.toolLabel} — result received</span>`;
+    tb.classList.add('used');tb.style.cursor='default';
     document.getElementById('tool-result').classList.add('show');
     const opts=document.getElementById('tool-opts');opts.style.display='flex';
-    const p=document.createElement('p');p.style.cssText='font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px';p.textContent='What does this result tell you?';opts.appendChild(p);
+    const p=document.createElement('p');p.style.cssText='font-size:13px;font-weight:500;margin-bottom:8px';p.textContent='What does this result tell you?';opts.appendChild(p);
     q.opts.forEach(opt=>{
       const btn=document.createElement('button');btn.className='opt';btn.textContent=opt.t;
       btn.onclick=()=>{
@@ -497,39 +562,34 @@ function renderTool(q){
 }
 
 function renderMeter(q){
-  const body=document.getElementById('q-body');
   let mval=50;
-  body.innerHTML=`
-    <div class="meter-wrap">
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:6px"><span>Not credible</span><span>Highly credible</span></div>
-      <div class="meter-track"><div class="meter-fill" id="mfill" style="width:50%"></div></div>
-      <input type="range" min="0" max="100" value="50" step="1" id="mslider" style="width:100%;margin-top:6px">
-      <div style="text-align:center;font-size:13px;color:var(--color-text-secondary);margin-top:4px">Credibility: <strong id="mval-disp">50%</strong></div>
-    </div>
-    <div class="opts" style="margin-top:10px">
-      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px">Issue your final verdict:</p>
-      <button class="opt" id="v-true">TRUE — the claim is credible and well-sourced</button>
-      <button class="opt" id="v-misleading">MISLEADING — partially true but decontextualised</button>
-      <button class="opt" id="v-false">FALSE — the claim is fabricated or manipulated</button>
-    </div>`;
-  const slider=document.getElementById('mslider');
-  const fill=document.getElementById('mfill');
-  const valDisp=document.getElementById('mval-disp');
-  slider.oninput=()=>{
-    mval=parseInt(slider.value);
+  const body=document.getElementById('q-body');
+  body.innerHTML=`<div class="meter-labels"><span>Not credible</span><span>Highly credible</span></div>
+  <div class="meter-track"><div class="meter-fill" id="mfill" style="width:50%;background:#dc2626"></div></div>
+  <input type="range" min="0" max="100" value="50" step="1" id="mslider">
+  <div class="meter-val">Credibility: <strong id="mval-disp">50%</strong></div>
+  <div class="opts" style="margin-top:10px">
+    <p style="font-size:13px;font-weight:500;margin-bottom:8px">Issue your final verdict:</p>
+    <button class="opt" id="v-true">TRUE — the claim is credible and well-sourced</button>
+    <button class="opt" id="v-misleading">MISLEADING — partially true but decontextualised</button>
+    <button class="opt" id="v-false">FALSE — the claim is fabricated or manipulated</button>
+  </div>`;
+  document.getElementById('mslider').oninput=function(){
+    mval=parseInt(this.value);
+    document.getElementById('mval-disp').textContent=mval+'%';
+    const fill=document.getElementById('mfill');
     fill.style.width=mval+'%';
-    valDisp.textContent=mval+'%';
-    fill.className='meter-fill'+(mval>=70?' high':mval>=40?' mid':'');
+    fill.style.background=mval>=70?'#16a34a':mval>=40?'#d97706':'#dc2626';
   };
   ['v-true','v-misleading','v-false'].forEach(id=>{
     document.getElementById(id).onclick=()=>{
       const correct=id==='v-false';
       ['v-true','v-misleading','v-false'].forEach(x=>{const b=document.getElementById(x);b.disabled=true;if(x===id)b.classList.add(correct?'ok':'bad');else if(x==='v-false')b.classList.add('reveal')});
-      slider.disabled=true;
+      document.getElementById('mslider').disabled=true;
       const pts=correct?25:0;if(correct)score+=pts;
       document.getElementById('score-disp').textContent=score;
-      answers.push({skill:q.skill,ok:correct});
-      showFB(correct,correct?`Correct! All three phases pointed to the same conclusion: this story is FALSE. Your credibility meter was set to ${mval}% — a professional fact-checker would put it below 15%.`:`The correct verdict is FALSE. Review the evidence from all three phases: fabricated source, recycled image, debunked by fact-checkers, and AI-manipulated video.`,pts);
+      answers.push({skill:'Final verdict',ok:correct});
+      showFB(correct,correct?`Correct. All three phases pointed to the same conclusion: this story is FALSE. Your meter was at ${mval}% — a professional would put it below 15%.`:`The correct verdict is FALSE. Review the evidence from all three phases: fabricated source, recycled image, debunked by fact-checkers, AI-manipulated video.`,pts);
       document.getElementById('next-btn').style.display='block';
     };
   });
@@ -538,13 +598,14 @@ function renderMeter(q){
 function showFB(ok,text,pts){
   const fb=document.getElementById('fb');
   fb.className='fb show '+(ok?'good':'bad');
-  fb.innerHTML=`${ok?'<i class="ti ti-circle-check" aria-hidden="true"></i>':'<i class="ti ti-circle-x" aria-hidden="true"></i>'} <strong>${ok&&pts>0?`+${pts} pts — `:'No points — '}</strong>${text}`;
+  fb.innerHTML=`<strong>${ok&&pts>0?`+${pts} pts — `:'No points — '}</strong>${text}`;
 }
 
 function nextQ(){
   qIdx++;
   if(qIdx>=qQueue.length){
-    phaseScores[phase-1]=score-(phaseScores.slice(0,phase-1).reduce((a,b)=>a+b,0));
+    const prev=phaseScores.slice(0,phase-1).reduce((a,b)=>a+b,0);
+    phaseScores[phase-1]=score-prev;
     if(phase<3){startPhase(phase+1)}else{showVerdict()}
     return;
   }
@@ -554,36 +615,25 @@ function nextQ(){
 function showVerdict(){
   document.getElementById('scr-game').style.display='none';
   const v=document.getElementById('scr-verdict');v.style.display='block';
-  const maxScore=170;
-  const pct=Math.round((score/maxScore)*100);
+  const maxScore=170;const pct=Math.round((score/maxScore)*100);
   let tier,icon,sub;
   if(pct>=80){tier='Master Detective';icon='🔍';sub='Outstanding. You applied every skill across all three phases — critical thinking, source verification, and technical forensics — to reach the correct verdict.'}
   else if(pct>=55){tier='Good Agent';icon='🕵️';sub='Solid work. You caught most of the key signals but a few slipped through. Review your missed questions — they reveal where your blind spots are.'}
   else{tier='Keep Training';icon='📋';sub='Misinformation is engineered to fool you. Now you know what the traps look like — replay with a different case to build your instincts systematically.'}
-
   const skillMap={};answers.forEach(a=>{if(!skillMap[a.skill])skillMap[a.skill]={c:0,t:0};skillMap[a.skill].t++;if(a.ok)skillMap[a.skill].c++});
-  const skillRows=Object.entries(skillMap).map(([k,val])=>`<div class="skill-row"><div class="skill-name">${k}</div><div class="skill-bar"><div class="skill-fill" style="width:${Math.round((val.c/val.t)*100)}%"></div></div><div style="font-size:12px;color:var(--color-text-secondary);width:28px;text-align:right">${val.c}/${val.t}</div></div>`).join('');
-
-  const phaseNames=['Phase 1','Phase 2','Phase 3'];
-  const phaseBreak=phaseScores.map((ps,i)=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span style="color:var(--color-text-secondary)">${phaseNames[i]}</span><span style="color:var(--color-text-primary);font-weight:500">${ps} pts</span></div>`).join('');
-
+  const skillRows=Object.entries(skillMap).map(([k,val])=>`<div class="skill-row"><div class="skill-name">${k}</div><div class="skill-bar"><div class="skill-fill" style="width:${Math.round((val.c/val.t)*100)}%"></div></div><div class="skill-count">${val.c}/${val.t}</div></div>`).join('');
+  const phaseBreak=['Phase 1 — Critical thinking','Phase 2 — Initial verification','Phase 3 — Technical tools'].map((n,i)=>`<div class="phase-row"><span style="color:var(--text2)">${n}</span><span style="font-weight:500">${phaseScores[i]} pts</span></div>`).join('');
   v.innerHTML=`<div class="verdict-wrap">
     <div class="v-icon">${icon}</div>
     <div class="v-title">${tier}</div>
-    <div class="v-sub">Total score: <strong>${score} / ${maxScore}</strong> (${pct}%)<br>${sub}</div>
-    <div class="skill-box">
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px">Skills breakdown</div>
-      ${skillRows}
-    </div>
-    <div class="skill-box">
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px">Points by phase</div>
-      ${phaseBreak}
-    </div>
+    <div class="v-sub">Score: <strong>${score} / ${maxScore}</strong> (${pct}%)<br>${sub}</div>
+    <div class="skill-box"><div class="skill-box-title">Skills breakdown</div>${skillRows}</div>
+    <div class="skill-box"><div class="skill-box-title">Points by phase</div>${phaseBreak}</div>
     <div class="case-box">
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">About this case — verdict: <span style="color:var(--color-text-danger)">${selCase.verdict}</span></div>
-      <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6">${selCase.realContext}</div>
+      <div class="verdict-badge">VERDICT: ${selCase.verdict}</div>
+      <div class="case-context">${selCase.realContext}</div>
     </div>
-    <button class="opt" style="width:100%;text-align:center" onclick="restart()">Investigate a different case ↗</button>
+    <button class="opt primary wide" onclick="restart()">Investigate a different case →</button>
   </div>`;
 }
 
@@ -591,9 +641,11 @@ function restart(){
   document.getElementById('scr-verdict').style.display='none';
   document.getElementById('scr-intro').style.display='block';
   selCase=null;score=0;phaseScores=[0,0,0];answers=[];phase=1;
+  document.getElementById('score-disp').textContent='0';
   document.querySelectorAll('.c-card').forEach(c=>c.classList.remove('picked'));
-  const b=document.getElementById('start-btn');if(b){b.disabled=true;b.style.opacity='.4';b.style.cursor='not-allowed';}
 }
 
 renderIntro();
 </script>
+</body>
+</html>
